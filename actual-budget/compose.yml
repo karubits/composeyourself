@@ -1,0 +1,24 @@
+---
+version: '3.8'
+services:
+  actual_server:
+    image: docker.io/actualbudget/actual-server:latest
+    environment:
+      - TZ=${TZ}
+    volumes:
+      - ${PATH_DATA}/actual-budget:/data
+    restart: unless-stopped
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+      - "traefik.enable=true"
+      - "traefik.http.routers.budget.entrypoints=websecure"
+      - "traefik.http.routers.budget.rule=Host(`budget.${DEFAULT_DOMAIN}`)"
+      - "traefik.http.routers.budget.service=budget"
+      - "traefik.http.services.budget.loadbalancer.server.port=5006"
+    networks:
+      - proxy
+
+networks:
+  proxy:
+    name: proxy
+    external: true
