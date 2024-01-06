@@ -1,0 +1,51 @@
+---
+version: "3.8"
+services:
+  jellyfin:
+    image: lscr.io/linuxserver/jellyfin:latest
+    container_name: jellyfin
+    environment:
+      - JELLYFIN_PublishedServerUrl=https://jellyfin.${DEFAULT_DOMAIN}
+      - PGID=${PGID}
+      - PUID=${PUID}
+      - TZ=${TZ}
+    volumes:
+      - ${PATH_CONFIG}/jellyfin:/config
+      - ${PATH_CACHE}/jellyfin:/cache
+      - ${PATH_MEDIA}/anime:/anime
+      - ${PATH_MEDIA}/movies:/movies
+      - ${PATH_MEDIA}/music:/music
+      - ${PATH_MEDIA}/tv:/tv
+    restart: 'unless-stopped'
+    ports:
+      - "7359:7359/udp"  # Client Discovery
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+      - "traefik.docker.network=proxy"
+      - "traefik.enable=true"
+      - "traefik.http.routers.jellyfin.entrypoints=websecure"
+      - "traefik.http.routers.jellyfin.rule=Host(`jellyfin.${DEFAULT_DOMAIN}`)"
+      - "traefik.http.routers.jellyfin.service=jellyfin"
+      - "traefik.http.services.jellyfin.loadbalancer.server.port=8096"
+      - homepage.group=Media
+      - homepage.name=Jellyfin
+      - homepage.icon=jellyfin.png
+      - homepage.href=https://jellyfin.${DEFAULT_DOMAIN}
+      - homepage.description=Media server
+      - homepage.weight=3
+      - homepage.widget.type=jellyfin
+      - homepage.widget.url=https://jellyfin.${DEFAULT_DOMAIN}
+      - homepage.widget.key=${JELLYFIN_API_KEY}
+    devices:
+      - "/dev/dri:/dev/dri"
+    networks:
+      - default
+      - proxy
+
+networks:
+  default:
+    name: media_network
+    external: true
+  proxy:
+    name: proxy
+    external: true

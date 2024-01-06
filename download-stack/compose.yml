@@ -1,0 +1,293 @@
+---
+version: '3.8'
+services:
+  gluetun:
+    image: qmcgaw/gluetun:latest
+    container_name: gluetun
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun:/dev/net/tun
+    # ports:
+    #   - 8888:8888/tcp # HTTP proxy
+    #   - 8388:8388/tcp # Shadowsocks
+    #   - 8388:8388/udp # Shadowsocks
+    volumes:
+      - ${PATH_CONFIG}/gluetun:/gluetun
+    environment:
+      - BLOCK_ADS=on
+      - BLOCK_MALICIOUS=on
+      - BLOCK_SURVEILLANCE=on
+      - DNS_UPDATE_PERIOD=24h
+      - DOT_PROVIDERS=quad9,cloudflare
+      - DOT=on
+      - FREE_ONLY=off
+      - OPENVPN_PASSWORD=${OPENVPN_PASS}
+      - OPENVPN_USER=${OPENVPN_USER}
+      - PGID=${PGID}
+      - PUID=${PUID}
+      - SERVER_COUNTRIES=${VPN_SERVERS_COUNTRY}
+      - TZ=${TZ}
+      - UPDATER_PERIOD=24h
+      - VPN_ENDPOINT_PORT=5060
+      - VPN_PORT_FORWARDING_PROVIDER=${VPN_PROVIDER}
+      - VPN_PORT_FORWARDING=on
+      - VPN_SERVICE_PROVIDER=${VPN_PROVIDER}
+      - VPN_TYPE=openvpn
+    networks: 
+      - proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=proxy"
+      # Gluetun Built-in HTTP control server (API Endpoint)
+      - "traefik.http.routers.gluetun.entrypoints=websecure"
+      - "traefik.http.routers.gluetun.rule=Host(`gluetun.${DEFAULT_DOMAIN}`)"
+      - "traefik.http.routers.gluetun.service=gluetun"
+      - "traefik.http.services.gluetun.loadbalancer.server.port=8000"
+      # Prowlarr
+      - "traefik.http.routers.prowlarr.entrypoints=websecure"
+      - "traefik.http.routers.prowlarr.rule=Host(`prowlarr.${DEFAULT_DOMAIN}`)"
+      - "traefik.http.routers.prowlarr.service=prowlarr"
+      - "traefik.http.services.prowlarr.loadbalancer.server.port=9696"
+      # Radarr
+      - "traefik.http.routers.radarr.entrypoints=websecure"
+      - "traefik.http.routers.radarr.rule=Host(`radarr.${DEFAULT_DOMAIN}`)"
+      - "traefik.http.routers.radarr.service=radarr"
+      - "traefik.http.services.radarr.loadbalancer.server.port=7878"
+      # Lidarr
+      - "traefik.http.routers.lidarr.entrypoints=websecure"
+      - "traefik.http.routers.lidarr.rule=Host(`lidarr.${DEFAULT_DOMAIN}`)"
+      - "traefik.http.routers.lidarr.service=lidarr"
+      - "traefik.http.services.lidarr.loadbalancer.server.port=8686"
+      # Sonarr
+      - "traefik.http.routers.sonarr.entrypoints=websecure"
+      - "traefik.http.routers.sonarr.rule=Host(`sonarr.${DEFAULT_DOMAIN}`)"
+      - "traefik.http.routers.sonarr.service=sonarr"
+      - "traefik.http.services.sonarr.loadbalancer.server.port=8989"
+      # Readarr
+      - "traefik.http.routers.readarr.entrypoints=websecure"
+      - "traefik.http.routers.readarr.rule=Host(`readarr.${DEFAULT_DOMAIN}`)"
+      - "traefik.http.routers.readarr.service=readarr"
+      - "traefik.http.services.readarr.loadbalancer.server.port=8787"
+      # Bazarr
+      - "traefik.http.routers.bazarr.entrypoints=websecure"
+      - "traefik.http.routers.bazarr.rule=Host(`bazarr.${DEFAULT_DOMAIN}`)"
+      - "traefik.http.routers.bazarr.service=bazarr"
+      - "traefik.http.services.bazarr.loadbalancer.server.port=6767"
+      # Deluge      
+      - "traefik.http.routers.deluge.entrypoints=websecure"
+      - "traefik.http.routers.deluge.rule=Host(`deluge.${DEFAULT_DOMAIN}`)"
+      - "traefik.http.routers.deluge.service=deluge"
+      - "traefik.http.services.deluge.loadbalancer.server.port=8112"
+      # Jellyseerr
+      - "traefik.http.routers.jellyseerr.entrypoints=websecure"
+      - "traefik.http.routers.jellyseerr.rule=Host(`jellyseerr.${DEFAULT_DOMAIN}`)"
+      - "traefik.http.routers.jellyseerr.service=jellyseerr"
+      - "traefik.http.services.jellyseerr.loadbalancer.server.port=5055"
+      # Homepage
+      - homepage.group=Download
+      - homepage.name=Prowlarr
+      - homepage.icon=gluetun.png
+      - homepage.widget.type=gluetun
+      - homepage.widge.url=https://glutun.${DEFAULT_DOMAIN}
+
+  prowlarr:
+    # 🔹🔹 PROWLARR  🔹🔹
+    # With Prowlarr, the user gets Indexer Sync and seamless integration support with various PVR apps. In addition, with Prowlarr, the user can manage all Torrent trackers and Usenet Indexers from one place while providing support for automation with the search for and download content, irrespective of the content type.
+    image: lscr.io/linuxserver/prowlarr:latest
+    container_name: prowlarr
+    network_mode: "service:gluetun"
+    restart: unless-stopped
+    environment:
+      - PGID=${PGID}
+      - PUID=${PUID}
+      - TZ=${TZ}
+    volumes:
+      - ${PATH_CONFIG}/prowlarr:/config
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+      - homepage.group=Download
+      - homepage.name=Prowlarr
+      - homepage.icon=prowlarr.png
+      - homepage.href=https://prowlarr.${DEFAULT_DOMAIN}
+      - homepage.description=Indexers management
+      - homepage.weight=4
+      - homepage.widget.type=prowlarr
+      - homepage.widget.url=https://prowlarr.${DEFAULT_DOMAIN}
+      - homepage.widget.key=${API_KEY_PROWLARR}
+
+  radarr:
+    # 🔹🔹 RADARR  🔹🔹
+    # Radarr is similar to Sonarr but grabs movies instead of TV shows.
+    image: lscr.io/linuxserver/radarr:latest
+    container_name: radarr
+    network_mode: "service:gluetun"
+    restart: unless-stopped
+    environment:
+      - PGID=${PGID}
+      - PUID=${PUID}
+      - TZ=${TZ}
+    volumes:
+      - ${PATH_CONFIG}/radarr:/config
+      - ${PATH_MEDIA}/movies:/movies
+      - ${PATH_DOWNLOAD}:/downloads
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+      - homepage.group=Media
+      - homepage.name=Radarr
+      - homepage.icon=radarr.png
+      - homepage.href=https://radarr.${DEFAULT_DOMAIN}
+      - homepage.description=Movies management
+      - homepage.weight=1
+      - homepage.widget.type=radarr
+      - homepage.widget.url=http://radarr.${DEFAULT_DOMAIN}
+      - homepage.widget.key=${API_KEY_RADARR}
+
+  lidarr:
+    # 🔹🔹 LIDARR  🔹🔹
+    # Lidarr is a music collection manager for Usenet and BitTorrent users. It can monitor multiple RSS feeds for new albums from your favorite artists and will interface with clients and indexers to grab, sort, and rename them.
+    image: lscr.io/linuxserver/lidarr:2.1.2-nightly
+    container_name: lidarr
+    network_mode: "service:gluetun"
+    restart: unless-stopped
+    environment:
+      - PGID=${PGID}
+      - PUID=${PUID}
+      - TZ=${TZ}
+    volumes:
+      - ${PATH_CONFIG}/lidarr:/config
+      - ${PATH_MEDIA}/music:/music #optional
+      - ${PATH_DOWNLOAD}:/downloads #optional
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+      - "traefik.enable=true"
+      - "homepage.group=Media"
+      - "homepage.name=Lidarr"
+      - "homepage.icon=lidarr.png"
+      - "homepage.href=https://lidarr.${DEFAULT_DOMAIN}"
+      - "homepage.description=Music Management"
+      - "homepage.widget.type=lidarr"
+      - "homepage.widget.url=http://lidarr:8686"
+      - "homepage.widget.key=${API_KEY_LIDARR}"
+
+  sonarr:
+    # 🔹🔹 SONARR  🔹🔹
+    # Sonarr is a PVR for Usenet and BitTorrent users. It can monitor multiple RSS feeds for new episodes of your favorite shows and will grab, sort and rename them.
+    image: lscr.io/linuxserver/sonarr:latest
+    container_name: sonarr
+    network_mode: "service:gluetun"
+    restart: unless-stopped
+    environment:
+      - PGID=${PGID}
+      - PUID=${PUID}
+      - TZ=${TZ}
+    volumes:
+      - ${PATH_CONFIG}/sonarr:/config
+      - ${PATH_MEDIA}/tv:/tv #optional
+      - ${PATH_DOWNLOAD}:/downloads #optional
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+      - homepage.group=Media
+      - homepage.name=Sonarr
+      - homepage.icon=sonarr.png
+      - homepage.href=https://sonarr.${DEFAULT_DOMAIN}
+      - homepage.description=TV Series management
+      - homepage.weight=0
+      - homepage.widget.type=sonarr
+      - homepage.widget.url=http://sonarr:8989
+      - homepage.widget.key=${API_KEY_SONARR}
+
+  readarr:
+    image: lscr.io/linuxserver/readarr:develop
+    container_name: readarr
+    network_mode: "service:gluetun"
+    restart: unless-stopped
+    environment:
+      - PGID=${PGID}
+      - PUID=${PUID}
+      - TZ=${TZ}
+    volumes:
+      - ${PATH_CONFIG}/readarr:/config
+      - ${PATH_DOWNLOAD}:/downloads
+      - ${PATH_MEDIA}/books:/books
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+      - homepage.group=Media
+      - homepage.name=readarr
+      - homepage.icon=readarr.png
+      - homepage.href=https://readarr.${DEFAULT_DOMAIN}
+      - homepage.description=Media server
+      - homepage.weight=3
+      - homepage.widget.type=readarr
+      - homepage.widget.url=http://readarr.${DEFAULT_DOMAIN}
+      - homepage.widget.key=${API_KEY_READARR}
+
+  bazarr:
+    # 🔹🔹 BAZARR  🔹🔹
+    # Bazarr is a companion application to Sonarr and Radarr that manages and downloads subtitles based on your requirements.
+    image: lscr.io/linuxserver/bazarr:latest
+    container_name: bazarr
+    network_mode: "service:gluetun"
+    restart: unless-stopped
+    environment:
+      - UMASK_SET # Control permissions of files and directories created by Bazarr
+      - PGID=${PGID}
+      - PUID=${PUID}
+      - TZ=${TZ}
+    volumes:
+      - ${PATH_CONFIG}/bazarr:/config
+      - ${PATH_MEDIA}/tv:/tv
+      - ${PATH_MEDIA}/movies:/movies
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+      - homepage.group=Media
+      - homepage.name=Bazarr
+      - homepage.icon=bazarr.png
+      - homepage.href=https://bazarr.${DEFAULT_DOMAIN}
+      - homepage.description=Subtitle management
+      - homepage.weight=0
+      - homepage.widget.type=bazarr
+      - homepage.widget.url=http://bazarr.${DEFAULT_DOMAIN}
+      - homepage.widget.key=${API_KEY_BAZARR}
+
+  deluge:
+    image: lscr.io/linuxserver/deluge:latest
+    container_name: deluge
+    network_mode: "service:gluetun"
+    restart: unless-stopped
+    environment:
+      - PGID=${PGID}
+      - PUID=${PUID}
+      - TZ=${TZ}
+      - DELUGE_LOGLEVEL=error #optional
+    volumes:
+      - ${PATH_CONFIG}/deluge:/config
+      - ${PATH_DOWNLOAD}:/downloads
+
+  jellyseerr:
+    # 🔹🔹  JELLYSEERR   🔹🔹
+    image: fallenbagel/jellyseerr:latest
+    container_name: jellyseerr
+    network_mode: "service:gluetun"
+    environment:
+      - PGID=${PGID}
+      - PUID=${PUID}
+      - TZ=${TZ}
+    volumes:
+      - ${PATH_CONFIG}/jellyseerr:/app/config
+    restart: unless-stopped
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+      - homepage.group=Media
+      - homepage.name=Jellyseerr
+      - homepage.icon=jellyseerr.png
+      - homepage.href=https://jellyseerr.${DEFAULT_DOMAIN}
+      - homepage.description=Media server
+      - homepage.weight=3
+      - homepage.widget.type=jellyseerr
+      - homepage.widget.url=http://jellyseerr:5055
+      - homepage.widget.key=${API_KEY_JELLYSEERR}
+
+networks:
+  proxy:
+    external: true

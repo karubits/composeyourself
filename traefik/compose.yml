@@ -1,0 +1,35 @@
+---
+version: '3.8'
+services:
+  traefik:
+    container_name: traefik
+    image: "traefik:2.10"
+    restart: always
+    ports:
+     - "80:80"
+     - "443:443"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.middlewares.auth.basicauth.users=admin:${TRAEFIK_DASHBOARD_PASS}"
+      - "traefik.http.routers.dashboard.entrypoints=websecure"
+      - "traefik.http.routers.dashboard.middlewares=auth"
+      - "traefik.http.routers.dashboard.rule=Host(`traefik.${DEFAULT_DOMAIN}`)"
+      - "traefik.http.routers.dashboard.service=api@internal"
+      - "traefik.http.routers.dashboard.tls.certresolver=le"
+      - "traefik.http.routers.dashboard.tls.domains[0].main=${DEFAULT_DOMAIN}"
+      - "traefik.http.routers.dashboard.tls.domains[0].sans=*.${DEFAULT_DOMAIN}"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ${PATH_CONFIG}/traefik:/etc/traefik
+    environment:
+      - NAMECHEAP_API_KEY=${API_KEY_NAMECHEAP}
+      - NAMECHEAP_API_USER=${API_USER_NAMECHEAP}
+      - TZ=${TZ}
+    networks:
+      - proxy
+
+networks:
+  proxy:
+    name: proxy
+    external: true

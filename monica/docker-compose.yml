@@ -1,0 +1,56 @@
+---
+version: "3.8"
+# Open source personal CRM.
+# https://www.monicahq.com/
+services:
+
+  monica-app:
+    container_name: monica-app
+    image: monica:latest
+    restart: always
+    depends_on:
+      - monica-db
+    volumes:
+      - monica_app:/var/www/html/storage
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+    networks:
+      - default
+      - proxy
+    env_file:
+      - .monica.env
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+      - "traefik.docker.network=proxy"
+      - "traefik.enable=true"
+      - "traefik.http.routers.monica.entrypoints=websecure"
+      - "traefik.http.routers.monica.rule=Host(`monica.${DEFAULT_DOMAIN}`)"
+      - "traefik.http.services.monica.loadbalancer.server.port=80"
+
+  monica-db:
+    container_name: monica-db
+    image: mysql:5.7
+    restart: always
+    command:
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_unicode_ci
+    volumes:
+      - monica_db:/var/lib/mysql
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+    env_file:
+      - .monica.env
+
+volumes:
+  monica_app:
+    name: monica_app
+  monica_db:
+    name: monica_db
+
+networks:
+  default:
+    name: monica_network
+    internal: true
+
+  proxy:
+    external: true

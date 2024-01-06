@@ -1,0 +1,123 @@
+version: "3.8"
+
+services:
+  nextcloud-web:
+    hostname: nextcloud-web
+    container_name: nextcloud-web
+    image: nextcloud:stable-apache
+    restart: always
+    volumes:
+      - ${NEXTCLOUD_DATA_DIR}:/data
+      - nextcloud_web:/var/www/html
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+    env_file:
+      - .nextcloud-web.env
+    networks:
+      - default
+      - proxy
+    labels:
+      # Homepage
+      - "homepage.description=nextcloud Media Server"
+      - "homepage.group=Media"
+      - "homepage.href=https://hub.${DEFAULT_DOMAIN}"
+      - "homepage.icon=nextcloud.png"
+      - "homepage.name=Nextcloud"
+      - "homepage.weight=3"
+      - "homepage.widget.type=nextcloud"
+      - "homepage.widget.url=https://hub.${DEFAULT_DOMAIN}" 
+      # Traefik 2
+      - "traefik.docker.network=proxy"
+      - "traefik.enable=true"
+      - "traefik.http.services.nextcloud.loadbalancer.server.port=80"
+      # add https proxy headers
+      - "traefik.http.middlewares.nextcloud-headers.headers.browserXSSFilter=true"
+      - "traefik.http.middlewares.nextcloud-headers.headers.contentTypeNosniff=true"
+      - "traefik.http.middlewares.nextcloud-headers.headers.customFrameOptionsValue=SAMEORIGIN"
+      - "traefik.http.middlewares.nextcloud-headers.headers.forceSTSHeader=true"
+      - "traefik.http.middlewares.nextcloud-headers.headers.referrerPolicy=no-referrer"
+      - "traefik.http.middlewares.nextcloud-headers.headers.sslRedirect=true"
+      - "traefik.http.middlewares.nextcloud-headers.headers.stsIncludeSubdomains=true"
+      - "traefik.http.middlewares.nextcloud-headers.headers.stsPreload=true"
+      - "traefik.http.middlewares.nextcloud-headers.headers.stsSeconds=315360000"
+      # Cal* Redirect
+      - "traefik.http.middlewares.nextcloud-redirect.redirectRegex.permanent=true"
+      - "traefik.http.middlewares.nextcloud-redirect.redirectRegex.regex=https://(.*)/.well-known/(card|cal)dav"
+      - "traefik.http.middlewares.nextcloud-redirect.redirectRegex.replacement=https://$${1}/remote.php/dav/"
+      # Router
+      - "traefik.http.routers.nextcloud.middlewares=nextcloud-redirect,nextcloud-headers"
+      - "traefik.http.routers.nextcloud.entrypoints=websecure"
+      - "traefik.http.routers.nextcloud.rule=Host(`hub.${DEFAULT_DOMAIN}`)"
+    depends_on:
+      nextcloud-db:
+          condition: service_healthy
+      nextcloud-cache:
+          condition: service_healthy
+
+  nextcloud-cron:
+    container_name: nextcloud-cron
+    image: nextcloud:apache
+    restart: always
+    volumes:
+      - ${NEXTCLOUD_DATA_DIR}:/data
+      - nextcloud_web:/var/www/html
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+    entrypoint: /cron.sh
+    depends_on:
+      - nextcloud-web
+      - nextcloud-db
+      - nextcloud-cache
+
+  nextcloud-cache:
+    container_name: nextcloud-cache
+    image: redis
+    restart: always
+    command: >
+      --requirepass ${REDIS_HOST_PASSWORD}
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+    env_file:
+      - .nextcloud-cache.env
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+
+  nextcloud-db:
+    container_name: nextcloud-db
+    image: mariadb:10.6
+    command: >
+      --transaction-isolation=READ-COMMITTED
+      --binlog-format=ROW
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_unicode_ci
+    restart: always
+    volumes:
+      - nextcloud_db:/var/lib/mysql
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+    env_file:
+      - .nextcloud-db.env
+    healthcheck:
+      test: ["CMD", "mysql", "-u${MYSQL_USER}", "-p${MYSQL_PASSWORD}", "-e", "use ${MYSQL_DATABASE}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      #start_period: 30s
+
+volumes:
+  nextcloud_db:
+    name: nextcloud_db
+  nextcloud_web:
+    name: nextcloud_web
+
+networks:
+  default:
+    name: nc_network
+    driver: bridge
+
+  proxy:
+    external: true

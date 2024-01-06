@@ -1,0 +1,116 @@
+---
+version: '3.8'
+services:
+  pdns_auth_local:
+    image: powerdns/pdns-auth-48:latest
+    container_name: pdns_auth_local
+    restart: always
+    environment:
+      - PDNS_AUTH_API_KEY=${API_KEY_PDNS_AUTH}
+    volumes:
+      - powerdns_auth_local:/var/lib/powerdns
+      - ${PATH_CONFIG}/dns-stack/pdns-auth-local/pdns.conf:/etc/powerdns/pdns.d/pdns.conf:ro
+    networks:
+      default:
+        ipv4_address: 172.18.198.2
+
+  pdns_auth_overlay:
+    image: powerdns/pdns-auth-48:latest
+    container_name: pdns_auth_overlay
+    restart: always
+    environment:
+      - PDNS_AUTH_API_KEY=${API_KEY_PDNS_AUTH}
+    volumes:
+      - powerdns_auth_overlay:/var/lib/powerdns
+      - ${PATH_CONFIG}/dns-stack/pdns-auth-overlay/pdns.conf:/etc/powerdns/pdns.d/pdns.conf:ro
+    networks:
+      default:
+        ipv4_address: 172.18.198.3
+
+  adguardhome_local:
+    image: 'adguard/adguardhome:latest'
+    container_name: 'adguard_local'
+    hostname: 'adguard'
+    restart: 'unless-stopped'
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ${PATH_DATA}/dns-stack/adguard-local:/opt/adguardhome/work
+      - ${PATH_CONFIG}/dns-stack/adguard-local:/opt/adguardhome/conf
+    ports:
+      # Plain DNS
+      - '${IP_LAN}:53:53/tcp'
+      - '${IP_LAN}:53:53/udp'
+      # DNS-over-TLS
+      - '${IP_LAN}:853:853/tcp'
+      # DNS-over-QUIC
+      - '${IP_LAN}:784:784/udp'
+      - '${IP_LAN}:853:853/udp'
+      - '${IP_LAN}:8853:8853/udp'
+      # DNSCrypt
+      - '${IP_LAN}:5443:5443/tcp'
+      - '${IP_LAN}:5443:5443/udp'
+    networks:
+      default:
+        ipv4_address: 172.18.198.4
+      proxy:
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+      - "traefik.enable=true"
+      - "traefik.docker.network=proxy"
+      - "traefik.http.routers.adguard1.entrypoints=websecure"
+      - "traefik.http.routers.adguard1.rule=Host(`adguard1.${DEFAULT_DOMAIN}`)"
+      - "traefik.http.services.adguard1.loadbalancer.server.port=3000"
+
+  adguardhome_overlay:
+    image: 'adguard/adguardhome:latest'
+    container_name: 'adguard_overlay'
+    hostname: 'adguard_overlay'
+    restart: 'unless-stopped'
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ${PATH_DATA}/dns-stack/adguard-overlay:/opt/adguardhome/work
+      - ${PATH_CONFIG}/dns-stack/adguard-overlay:/opt/adguardhome/conf
+    ports:
+      # Plain DNS
+      - '${IP_OVERLAY}:53:53/tcp'
+      - '${IP_OVERLAY}:53:53/udp'
+      # DNS-over-TLS
+      - '${IP_OVERLAY}:853:853/tcp'
+      # DNS-over-QUIC
+      - '${IP_OVERLAY}:784:784/udp'
+      - '${IP_OVERLAY}:853:853/udp'
+      - '${IP_OVERLAY}:8853:8853/udp'
+      # DNSCrypt
+      - '${IP_OVERLAY}:5443:5443/tcp'
+      - '${IP_OVERLAY}:5443:5443/udp'
+    networks:
+      default:
+        ipv4_address: 172.18.198.5
+      proxy:
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+      - "traefik.enable=true"
+      - "traefik.docker.network=proxy"
+      - "traefik.http.routers.adguard2.entrypoints=websecure"
+      - "traefik.http.routers.adguard2.rule=Host(`adguard2.${DEFAULT_DOMAIN}`)"
+      - "traefik.http.services.adguard2.loadbalancer.server.port=3000"
+
+volumes:
+  powerdns_auth_local:
+    driver: local
+    name: powerdns_auth_local
+  powerdns_auth_overlay:
+    driver: local
+    name: powerdns_auth_overlay
+
+networks:
+  proxy:
+    name: proxy
+    external: true
+  default:
+    name: dns_network
+    ipam:
+      config:
+        - subnet: 172.18.198.0/29
+          ip_range: 172.18.198.0/29
+          gateway: 172.18.198.1

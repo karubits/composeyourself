@@ -1,0 +1,39 @@
+version: "3.8"
+services:
+  dockge:
+    container_name: dockge
+    image: louislam/dockge:1
+    restart: unless-stopped
+    # ports:
+    #   # Host Port : Container Port
+    #   - 5001:5001
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ${PATH_DATA}/dockge:/app/data
+        
+      # If you want to use private registries, you need to share the auth file with Dockge:
+      # - /root/.docker/:/root/.docker
+
+      # Stacks Directory
+      # ⚠️ READ IT CAREFULLY. If you did it wrong, your data could end up writing into a WRONG PATH.
+      # ⚠️ 1. FULL path only. No relative path (MUST)
+      # ⚠️ 2. Left Stacks Path === Right Stacks Path (MUST)
+      - /opt/containers/stacks:/opt/stacks
+    environment:
+      # Tell Dockge where is your stacks directory
+      - DOCKGE_STACKS_DIR=/opt/stacks
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+      - "traefik.enable=true"
+      - "traefik.http.routers.dockge.entrypoints=websecure"
+      - "traefik.http.routers.dockge.rule=Host(`dockge.${DEFAULT_DOMAIN}`)"
+      - "traefik.http.routers.dockge.tls=true"
+      - "traefik.http.routers.dockge.tls.certresolver=le"
+      - "traefik.http.routers.dockge.tls.domains[0].main=${DEFAULT_DOMAIN}"
+      - "traefik.http.routers.dockge.tls.domains[0].sans=*.${DEFAULT_DOMAIN}"
+      - "traefik.http.services.dockge.loadbalancer.server.port=5001"
+
+networks:
+  default:
+    name: proxy
+    external: true

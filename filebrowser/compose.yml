@@ -1,0 +1,33 @@
+version: "3.8"
+services:
+  filebrowser:
+    user: "${PUID}:${PGID}"
+    container_name: filebrowser
+    image: hurlenko/filebrowser:latest
+    volumes:
+      - ${PATH_DATA}filebrowser/filebrowser.db:/database/filebrowser.db
+      - ${PATH_CONFIG}/filebrowser/settings.json:/config/settings.json
+      - ${PATH_MEDIA}/anime:/data/anime
+      - ${PATH_MEDIA}/movies:/data/movies
+      - ${PATH_MEDIA}/music:/data/music
+      - ${PATH_MEDIA}/books:/data/books
+      - ${PATH_MEDIA}/tv:/data/tv
+      - ${PATH_MEDIA}/downloads:/data/downloads
+    restart: always
+    environment:
+      - FB_PORT=8080
+      - FB_USERNAME=${FB_USER}
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+      - "traefik.enable=true"
+      - "traefik.http.routers.filebrowser.entrypoints=websecure"
+      - "traefik.http.routers.filebrowser.rule=Host(`filebrowser.${DEFAULT_DOMAIN}`)"
+      - "traefik.http.routers.filebrowser.service=filebrowser"
+      - "traefik.http.services.filebrowser.loadbalancer.server.port=8080"
+    networks:
+      - proxy
+
+networks:
+  proxy:
+    name: proxy
+    external: true
