@@ -265,7 +265,7 @@ services:
       - ${PATH_DOWNLOAD}:/downloads
 
   jellyseerr:
-    # 🔹🔹  JELLYSEERR   🔹🔹
+    # 🔹🔹 JELLYSEERR 🔹🔹
     image: fallenbagel/jellyseerr:latest
     container_name: jellyseerr
     network_mode: "service:gluetun"
