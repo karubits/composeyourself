@@ -56,7 +56,7 @@ services:
     container_name: immich_machine_learning
     image: ghcr.io/immich-app/immich-machine-learning:${IMMICH_VERSION:-release}
     volumes:
-      - immich-model-cache:/cache
+      - model-cache:/cache
     env_file:
       - .env
     restart: always
@@ -76,12 +76,12 @@ services:
       POSTGRES_USER: ${DB_USERNAME}
       POSTGRES_DB: ${DB_DATABASE_NAME}
     volumes:
-      - immich-pgdata:/var/lib/postgresql/data
+      - pgdata:/var/lib/postgresql/data
     restart: always
 
 volumes:
-  immich-pgdata:
-  immich-model-cache:
+  pgdata:
+  model-cache:
 
 networks:
   proxy:
