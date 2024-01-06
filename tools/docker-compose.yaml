@@ -1,7 +1,6 @@
-version: '3.9'
-
+---
+version: '3.8'
 services:
-
   it-tools:
       image: 'ghcr.io/corentinth/it-tools:latest'
       restart: unless-stopped
@@ -10,15 +9,31 @@ services:
         - "com.centurylinklabs.watchtower.enable=true"
         - "traefik.enable=true"
         - "traefik.http.routers.ittools.entrypoints=websecure"
-        - "traefik.http.routers.ittools.rule=Host(`toolbox.${DEFAULT_DOMAIN}`)"
+        - "traefik.http.routers.ittools.rule=Host(`it-tools.${DEFAULT_DOMAIN}`)"
+        - "traefik.http.routers.ittools.service=ittools"
         - "traefik.http.services.ittools.loadbalancer.server.port=80"
+      networks:
+        - proxy
 
   stirling-pdf:
     container_name: stirling-pdf
     image: frooodle/s-pdf:latest
-    ports:
-      - '8080:8080'
     volumes:
-      - /location/of/trainingData:/usr/share/tesseract-ocr/4.00/tessdata #Required for extra OCR languages
-      - /location/of/extraConfigs:/configs
-#     - /location/of/customFiles:/customFiles/
+      - ${PATH_DATA}/stirling-pdf:/usr/share/tesseract-ocr/5/tessdata #Required for extra OCR languages
+      - ${PATH_CONFIG}/stirling-pdf:/configs
+    environment:
+      - DOCKER_ENABLE_SECURITY=false
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+      - "traefik.enable=true"
+      - "traefik.http.routers.pdf.entrypoints=websecure"
+      - "traefik.http.routers.pdf.rule=Host(`pdf.${DEFAULT_DOMAIN}`)"
+      - "traefik.http.routers.pdf.service=pdf"
+      - "traefik.http.services.pdf.loadbalancer.server.port=8080"
+    networks:
+      - proxy
+
+networks:
+  proxy:
+    name: proxy
+    external: true

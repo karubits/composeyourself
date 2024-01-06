@@ -1,0 +1,24 @@
+---
+version: '3.8'
+
+services:
+  uptime-kuma:
+    image: louislam/uptime-kuma:1
+    container_name: uptime-kuma
+    volumes:
+      - ${PATH_DATA}/uptime-kuma:/app/data
+    restart: always
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+      - "traefik.enable=true"
+      - "traefik.http.routers.uptimekuma.entrypoints=websecure"
+      - "traefik.http.routers.uptimekuma.rule=Host(`status.${DEFAULT_DOMAIN}`)"
+      - "traefik.http.routers.uptimekuma.service=uptimekuma"
+      - "traefik.http.services.uptimekuma.loadbalancer.server.port=3001"
+    networks:
+      - proxy
+
+networks:
+  proxy:
+    name: proxy
+    external: true
