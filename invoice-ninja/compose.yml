@@ -1,0 +1,93 @@
+version: "3.8"
+services:
+  web:
+    image: "nginx:1.21"
+    environment:
+      - DOMAIN=invoiceninja.${DEFAULT_DOMAIN}
+    configs:
+      - source: nginx_conf
+        target: /etc/nginx/nginx.conf
+    volumes:
+      - "public:/var/www/app/public"
+    networks:
+      - proxy
+      - internal
+    depends_on:
+      - invoiceninja
+    deploy:
+      update_config:
+        failure_action: rollback
+    labels:
+      - "traefik.docker.network=proxy"
+      - "traefik.enable=true"
+      - "traefik.http.routers.invoiceninja.entrypoints=websecure"
+      - "traefik.http.routers.invoiceninja.rule=Host(`invoiceninja.${DEFAULT_DOMAIN}`)"
+      - "traefik.http.routers.invoiceninja.service=invoiceninja"
+      - "traefik.http.services.invoiceninja.loadbalancer.server.port=80"
+
+  app:
+    image: "invoiceninja/invoiceninja:5"
+    volumes:
+      - "public:/var/www/app/public"
+      - "storage:/var/www/app/storage"
+    environment:
+      - API_SECRET_FILE=/run/secrets/api_secret
+      - APP_CIPHER=AES-256-CBC
+      - APP_DEBUG=true
+      - APP_ENV=production
+      - APP_KEY=${APP_KEY}
+      - APP_LOCALE=en
+      - APP_URL=invoiceninja.${DEFAULT_DOMAIN}
+      - DB_DATABASE=ninja
+      - DB_HOST=mariadb
+      - DB_PASSWORD_FILE=${DB_PASS}
+      - DB_STRICT=false
+      - DB_TYPE=mysql
+      - DB_USERNAME=ninja
+      - LOG=single
+      - REQUIRE_HTTPS=false
+      - SESSION_ENCRYPT=true
+      - SESSION_SECURE=true
+    depends_on:
+      - mariadb
+
+  ninja-cache:
+    container_name: ninja-cache
+    image: redis
+    restart: always
+    command: >
+      --requirepass ${REDIS_HOST_PASSWORD}
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+    env_file:
+      - .invoice-ninja.env
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+
+  db:
+    image: "mariadb:10.6"
+    environment:
+      - MYSQL_DATABASE=ninja
+      - MYSQL_USER=ninja
+      - MYSQL_PASSWORD=${DB_PASS}
+      - MYSQL_ROOT_PASSWORD=${DB_ROOT_PASS}
+    secrets:
+      - db_root_passwd
+      - db_passwd
+    volumes:
+      - "mariadb:/var/lib/mysql"
+
+
+volumes:
+  mariadb:
+  public:
+  storage:
+
+networks:
+  proxy:
+    name: proxy
+    external: true

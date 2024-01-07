@@ -2,7 +2,7 @@
 version: "3.8"
 services:
   homepage:
-    image: ghcr.io/benphelps/homepage:latest
+    image: ghcr.io/gethomepage/homepage:latest
     container_name: homepage
     volumes:
       - ${PATH_CONFIG}/homepage:/app/config
@@ -20,3 +20,10 @@ services:
       - "traefik.http.routers.homepage.rule=Host(`home.${DEFAULT_DOMAIN}`)"
       - "traefik.http.routers.homepage.service=homepage"
       - "traefik.http.services.homepage.loadbalancer.server.port=3000"
+    networks:
+      - proxy
+
+networks:
+  proxy:
+    external: true
+
