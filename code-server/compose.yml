@@ -15,8 +15,9 @@ services:
       - PROXY_DOMAIN=code.${DEFAULT_DOMAIN} #optional
       - DEFAULT_WORKSPACE=/config/workspace #optional
     volumes:
-      - ${PATH_CONFIG}/code-server/config:/config
-      - /opt/containers:opt/containers
+      - ${PATH_CONFIG}/code-server/config:/home/coder/.config
+      - /opt/containers/stacks:/home/coder/stacks
+      - /opt/containers/configs:/home/coder/configs
     networks:
       proxy:
     labels:
@@ -26,6 +27,12 @@ services:
       - "traefik.http.routers.code-server.rule=Host(`code.${DEFAULT_DOMAIN}`)"
       - "traefik.http.routers.code-server.service=code-server"
       - "traefik.http.services.code-server.loadbalancer.server.port=8443"
+      - "homepage.name=Code-Server"
+      - "homepage.description=VS Code in your browser"
+      - "homepage.group=Tools"
+      - "homepage.href=https://code.${DEFAULT_DOMAIN}"
+      - "homepage.icon=code-server.png"
+      - "homepage.weight=3"
     restart: unless-stopped
 
 networks:

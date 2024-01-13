@@ -45,6 +45,29 @@ services:
     networks:
       - proxy
 
+
+  speedtest:
+    restart: unless-stopped
+    container_name: openspeedtest
+    image: openspeedtest/latest
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+      - "traefik.enable=true"
+      - "traefik.http.routers.speedtest.entrypoints=websecure"
+      - "traefik.http.routers.speedtest.rule=Host(`speedtest.${DEFAULT_DOMAIN}`)"
+      - "traefik.http.routers.speedtest.service=speedtest"
+      - "traefik.http.services.speedtest.loadbalancer.server.port=3000"
+      - "traefik.http.middlewares.limit.buffering.maxRequestBodyBytes=10000000000"
+      - "traefik.http.routers.openspeedtest.middlewares=limit"
+      - "homepage.name=OpenSpeedTest"
+      - "homepage.description=Internet speed testing tool"
+      - "homepage.group=Tools"
+      - "homepage.href=https://speedtest.${DEFAULT_DOMAIN}"
+      - "homepage.icon=openspeedtest.png"
+      - "homepage.weight=3"
+    networks:
+      - proxy
+
 networks:
   proxy:
     name: proxy
