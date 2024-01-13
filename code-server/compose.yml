@@ -8,16 +8,16 @@ services:
       - PUID=1000
       - PGID=1000
       - TZ=${TZ}
-      - PASSWORD=password #optional
-      - HASHED_PASSWORD= #optional
-      - SUDO_PASSWORD=password #optional
-      - SUDO_PASSWORD_HASH= #optional
+      - PASSWORD=${PASSWORD} #optional
+      #- HASHED_PASSWORD= #optional
+      #- SUDO_PASSWORD=password #optional
+      #- SUDO_PASSWORD_HASH= #optional
       - PROXY_DOMAIN=code.${DEFAULT_DOMAIN} #optional
       - DEFAULT_WORKSPACE=/config/workspace #optional
     volumes:
       - ${PATH_CONFIG}/code-server/config:/home/coder/.config
-      - /opt/containers/stacks:/home/coder/stacks
-      - /opt/containers/configs:/home/coder/configs
+      - /opt/containers/stacks:/config/workspace/stacks
+      - /opt/containers/configs:/config/workspace/configs
     networks:
       proxy:
     labels:
