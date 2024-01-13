@@ -5,7 +5,7 @@ services:
     container_name: filebrowser
     image: hurlenko/filebrowser:latest
     volumes:
-      - ${PATH_DATA}filebrowser/filebrowser.db:/database/filebrowser.db
+      - ${PATH_DATA}/filebrowser/filebrowser.db:/database/filebrowser.db
       - ${PATH_CONFIG}/filebrowser/settings.json:/config/settings.json
       - ${PATH_MEDIA}/anime:/data/anime
       - ${PATH_MEDIA}/movies:/data/movies

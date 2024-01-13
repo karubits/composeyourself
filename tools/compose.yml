@@ -23,6 +23,7 @@ services:
 
   stirling-pdf:
     container_name: stirling-pdf
+    restart: unless-stopped
     image: frooodle/s-pdf:latest
     volumes:
       - ${PATH_DATA}/stirling-pdf:/usr/share/tesseract-ocr/5/tessdata #Required for extra OCR languages
@@ -45,7 +46,6 @@ services:
     networks:
       - proxy
 
-
   speedtest:
     restart: unless-stopped
     container_name: openspeedtest
@@ -67,6 +67,8 @@ services:
       - "homepage.weight=3"
     networks:
       - proxy
+
+
 
 networks:
   proxy:

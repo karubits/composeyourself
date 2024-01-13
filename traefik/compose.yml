@@ -9,6 +9,17 @@ services:
      - "80:80"
      - "443:443"
     labels:
+      # Homepage
+      - "homepage.group=Tools"
+      - "homepage.name=traefik"
+      - "homepage.icon=traefik.png"
+      - "homepage.href=https://traefik.${DEFAULT_DOMAIN}"
+      - "homepage.weight=3"
+      - "homepage.widget.type=traefik"
+      - "homepage.widget.url=https://traefik.${DEFAULT_DOMAIN}"
+      - "homepage.widget.username=admin"
+      - "homepage.widget.password=${TRAEFIK_PASS}"
+      # Traefik Dashboard
       - "traefik.enable=true"
       - "traefik.http.middlewares.auth.basicauth.users=admin:${TRAEFIK_DASHBOARD_PASS}"
       - "traefik.http.routers.dashboard.entrypoints=websecure"
