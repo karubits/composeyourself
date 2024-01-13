@@ -6,7 +6,7 @@ events {
 
 http {
     upstream backend {
-        server invoiceninja:9000;
+        server ninja-app:9000;
     }
 
     include /etc/nginx/mime.types;
@@ -16,7 +16,7 @@ http {
 
     server {
         listen      80 default;
-        server_name {{ env "DOMAIN" }};
+        server_name invoice.karubits.com;
 
         root /var/www/app/public;
 
