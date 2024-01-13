@@ -37,6 +37,13 @@ services:
     networks: 
       - proxy
     labels:
+      # Homepage
+      - "homepage.group=Downloads"
+      - "homepage.name=Gluetun"
+      - "homepage.icon=gluetun.png"
+      - "homepage.widget.type=gluetun"
+      - "homepage.widget.url=https://gluetun.${DEFAULT_DOMAIN}"
+      # Treafik
       - "traefik.enable=true"
       - "traefik.docker.network=proxy"
       # Gluetun Built-in HTTP control server (API Endpoint)
@@ -84,12 +91,6 @@ services:
       - "traefik.http.routers.jellyseerr.rule=Host(`jellyseerr.${DEFAULT_DOMAIN}`)"
       - "traefik.http.routers.jellyseerr.service=jellyseerr"
       - "traefik.http.services.jellyseerr.loadbalancer.server.port=5055"
-      # Homepage
-      - "homepage.group=Downloads"
-      - "homepage.name=Gluetun"
-      - "homepage.icon=gluetun.png"
-      - "homepage.widget.type=gluetun"
-      - "homepage.widge.url=https://glutun.${DEFAULT_DOMAIN}"
 
   prowlarr:
     # 🔹🔹 PROWLARR  🔹🔹
