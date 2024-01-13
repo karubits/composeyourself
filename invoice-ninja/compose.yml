@@ -1,9 +1,10 @@
 version: "3.8"
 services:
   web:
+    container_name: ninja-web
     image: "nginx:1.21"
     environment:
-      - DOMAIN=invoiceninja.${DEFAULT_DOMAIN}
+      - DOMAIN=invoice.${DEFAULT_DOMAIN}
     configs:
       - source: nginx_conf
         target: /etc/nginx/nginx.conf
@@ -11,57 +12,47 @@ services:
       - "public:/var/www/app/public"
     networks:
       - proxy
-      - internal
     depends_on:
-      - invoiceninja
+      - app
     deploy:
       update_config:
         failure_action: rollback
     labels:
+      - "homepage.name=Invoice Ninja"
+      - "homepage.description=Invoicing Service"
+      - "homepage.group=Apps"
+      - "homepage.href=https://invoice.${DEFAULT_DOMAIN}"
+      - "homepage.icon=invoiceninja.png"
+      - "homepage.weight=3"
       - "traefik.docker.network=proxy"
       - "traefik.enable=true"
       - "traefik.http.routers.invoiceninja.entrypoints=websecure"
-      - "traefik.http.routers.invoiceninja.rule=Host(`invoiceninja.${DEFAULT_DOMAIN}`)"
+      - "traefik.http.routers.invoiceninja.rule=Host(`invoice.${DEFAULT_DOMAIN}`)"
       - "traefik.http.routers.invoiceninja.service=invoiceninja"
       - "traefik.http.services.invoiceninja.loadbalancer.server.port=80"
 
   app:
+    container_name: ninnja-app
     image: "invoiceninja/invoiceninja:5"
     volumes:
       - "public:/var/www/app/public"
       - "storage:/var/www/app/storage"
-    environment:
-      - API_SECRET_FILE=/run/secrets/api_secret
-      - APP_CIPHER=AES-256-CBC
-      - APP_DEBUG=true
-      - APP_ENV=production
-      - APP_KEY=${APP_KEY}
-      - APP_LOCALE=en
-      - APP_URL=invoiceninja.${DEFAULT_DOMAIN}
-      - DB_DATABASE=ninja
-      - DB_HOST=mariadb
-      - DB_PASSWORD_FILE=${DB_PASS}
-      - DB_STRICT=false
-      - DB_TYPE=mysql
-      - DB_USERNAME=ninja
-      - LOG=single
-      - REQUIRE_HTTPS=false
-      - SESSION_ENCRYPT=true
-      - SESSION_SECURE=true
+    env_file: invoice-ninja.env
     depends_on:
-      - mariadb
+      - db
+      - cache
 
-  ninja-cache:
+  cache:
     container_name: ninja-cache
     image: redis
     restart: always
     command: >
-      --requirepass ${REDIS_HOST_PASSWORD}
+      --requirepass ${REDIS_PASS}
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
     env_file:
-      - .invoice-ninja.env
+      - invoice-ninja.env
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 5s
@@ -69,15 +60,13 @@ services:
       retries: 30
 
   db:
+    container_name: ninja-db
     image: "mariadb:10.6"
     environment:
       - MYSQL_DATABASE=ninja
       - MYSQL_USER=ninja
       - MYSQL_PASSWORD=${DB_PASS}
       - MYSQL_ROOT_PASSWORD=${DB_ROOT_PASS}
-    secrets:
-      - db_root_passwd
-      - db_passwd
     volumes:
       - "mariadb:/var/lib/mysql"
 
@@ -91,3 +80,7 @@ networks:
   proxy:
     name: proxy
     external: true
+
+configs:
+  nginx_conf:
+    file: ./nginx_conf
