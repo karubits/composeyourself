@@ -19,13 +19,14 @@ services:
     labels:
       # Homepage
       - "homepage.description=nextcloud Media Server"
-      - "homepage.group=Media"
+      - "homepage.group=Apps"
       - "homepage.href=https://hub.${DEFAULT_DOMAIN}"
       - "homepage.icon=nextcloud.png"
       - "homepage.name=Nextcloud"
       - "homepage.weight=3"
       - "homepage.widget.type=nextcloud"
       - "homepage.widget.url=https://hub.${DEFAULT_DOMAIN}" 
+      - "homepage.widget.key=${TOKEN_SERVICE_INFO}"
       # Traefik 2
       - "traefik.docker.network=proxy"
       - "traefik.enable=true"

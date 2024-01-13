@@ -78,6 +78,17 @@ services:
       PAPERLESS_TIKA_GOTENBERG_ENDPOINT: http://paperless-gotenberg:3000
       PAPERLESS_TIKA_ENDPOINT: http://paperless-tika:9998
     labels:
+      # Homepage
+      - "homepage.description=PaperlessNGX"
+      - "homepage.group=Apps"
+      - "homepage.href=https://paperless.${DEFAULT_DOMAIN}"
+      - "homepage.icon=paperless.png"
+      - "homepage.name=Paperless"
+      - "homepage.weight=3"
+      - "homepage.widget.type=paperlessngx"
+      - "homepage.widget.url=https://paperless.${DEFAULT_DOMAIN}" 
+      - "homepage.widget.key=${API_TOKEN_PAPERLESS}"
+      # Traefik
       - "traefik.docker.network=proxy"
       - "traefik.enable=true"
       - "traefik.http.routers.paperless.entrypoints=websecure"

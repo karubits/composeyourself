@@ -34,6 +34,15 @@ services:
       - "traefik.http.routers.immich.rule=Host(`photos.${DEFAULT_DOMAIN}`)"
       - "traefik.http.routers.immich.service=immich"
       - "traefik.http.services.immich.loadbalancer.server.port=3001"
+      - "homepage.group=Apps"
+      - "homepage.name=Immich"
+      - "homepage.icon=immich.png"
+      - "homepage.href=https://photos.${DEFAULT_DOMAIN}"
+      - "homepage.description=Apps"
+      - "homepage.weight=3"
+      - "homepage.widget.type=immich"
+      - "homepage.widget.url=https://photos.${DEFAULT_DOMAIN}"
+      - "homepage.widget.key=${API_TOKEN_IMMICH}"
 
   immich-microservices:
     container_name: immich_microservices

@@ -1,0 +1,33 @@
+---
+version: "3.8"
+services:
+  code-server:
+    image: lscr.io/linuxserver/code-server:latest
+    container_name: code-server
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=${TZ}
+      - PASSWORD=password #optional
+      - HASHED_PASSWORD= #optional
+      - SUDO_PASSWORD=password #optional
+      - SUDO_PASSWORD_HASH= #optional
+      - PROXY_DOMAIN=code.${DEFAULT_DOMAIN} #optional
+      - DEFAULT_WORKSPACE=/config/workspace #optional
+    volumes:
+      - ${PATH_CONFIG}/code-server/config:/config
+      - /opt/containers:opt/containers
+    networks:
+      proxy:
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+      - "traefik.enable=true"
+      - "traefik.http.routers.code-server.entrypoints=websecure"
+      - "traefik.http.routers.code-server.rule=Host(`code.${DEFAULT_DOMAIN}`)"
+      - "traefik.http.routers.code-server.service=code-server"
+      - "traefik.http.services.code-server.loadbalancer.server.port=8443"
+    restart: unless-stopped
+
+networks:
+  proxy:
+    external: true

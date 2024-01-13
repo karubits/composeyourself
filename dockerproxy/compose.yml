@@ -9,19 +9,17 @@ services:
         - SERVICES=1 # Allow access to viewing services (necessary when using Docker Swarm)
         - TASKS=1 # Allow access to viewing tasks (necessary when using Docker Swarm)
         - POST=0 # Disallow any POST operations (effectively read-only)
-    ports:
-        - 127.0.0.1:2375:2375
+    # ports:
+    #     - 127.0.0.1:2375:2375
     volumes:
         - /var/run/docker.sock:/var/run/docker.sock:ro # Mounted as read-only
     restart: unless-stopped
     networks:
-      - media_network
+      - docker-proxy
 
 networks:
   proxy:
     name: proxy
     external: true
-
-  media_network:
-    name: media_network
-    external: true
+  docker-proxy:
+    name: docker-proxy

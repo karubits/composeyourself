@@ -27,10 +27,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.dockge.entrypoints=websecure"
       - "traefik.http.routers.dockge.rule=Host(`dockge.${DEFAULT_DOMAIN}`)"
-      - "traefik.http.routers.dockge.tls=true"
-      - "traefik.http.routers.dockge.tls.certresolver=le"
-      - "traefik.http.routers.dockge.tls.domains[0].main=${DEFAULT_DOMAIN}"
-      - "traefik.http.routers.dockge.tls.domains[0].sans=*.${DEFAULT_DOMAIN}"
+
       - "traefik.http.services.dockge.loadbalancer.server.port=5001"
 
 networks:

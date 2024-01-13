@@ -1,0 +1,51 @@
+---
+version: '3.8'
+services:
+  it-tools:
+    image: 'ghcr.io/corentinth/it-tools:latest'
+    restart: unless-stopped
+    container_name: it-tools
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+      - "traefik.enable=true"
+      - "traefik.http.routers.ittools.entrypoints=websecure"
+      - "traefik.http.routers.ittools.rule=Host(`it-tools.${DEFAULT_DOMAIN}`)"
+      - "traefik.http.routers.ittools.service=ittools"
+      - "traefik.http.services.ittools.loadbalancer.server.port=80"
+      - "homepage.name=IT Tools"
+      - "homepage.description=A collection of IT tools"
+      - "homepage.group=Tools"
+      - "homepage.href=https://it-tools.${DEFAULT_DOMAIN}"
+      - "homepage.icon=it-tools.png"
+      - "homepage.weight=3"
+    networks:
+      - proxy
+
+  stirling-pdf:
+    container_name: stirling-pdf
+    image: frooodle/s-pdf:latest
+    volumes:
+      - ${PATH_DATA}/stirling-pdf:/usr/share/tesseract-ocr/5/tessdata #Required for extra OCR languages
+      - ${PATH_CONFIG}/stirling-pdf:/configs
+    environment:
+      - DOCKER_ENABLE_SECURITY=false
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+      - "traefik.enable=true"
+      - "traefik.http.routers.pdf.entrypoints=websecure"
+      - "traefik.http.routers.pdf.rule=Host(`pdf.${DEFAULT_DOMAIN}`)"
+      - "traefik.http.routers.pdf.service=pdf"
+      - "traefik.http.services.pdf.loadbalancer.server.port=8080"
+      - "homepage.name=Stirling PDF"
+      - "homepage.description=Site for manipulating PDF files"
+      - "homepage.group=Tools"
+      - "homepage.href=https://it-tools.${DEFAULT_DOMAIN}"
+      - "homepage.icon=mdi-file-pdf-box"
+      - "homepage.weight=3"
+    networks:
+      - proxy
+
+networks:
+  proxy:
+    name: proxy
+    external: true

@@ -85,11 +85,11 @@ services:
       - "traefik.http.routers.jellyseerr.service=jellyseerr"
       - "traefik.http.services.jellyseerr.loadbalancer.server.port=5055"
       # Homepage
-      - homepage.group=Download
-      - homepage.name=Prowlarr
-      - homepage.icon=gluetun.png
-      - homepage.widget.type=gluetun
-      - homepage.widge.url=https://glutun.${DEFAULT_DOMAIN}
+      - "homepage.group=Downloads"
+      - "homepage.name=Gluetun"
+      - "homepage.icon=gluetun.png"
+      - "homepage.widget.type=gluetun"
+      - "homepage.widge.url=https://glutun.${DEFAULT_DOMAIN}"
 
   prowlarr:
     # 🔹🔹 PROWLARR  🔹🔹
@@ -106,15 +106,15 @@ services:
       - ${PATH_CONFIG}/prowlarr:/config
     labels:
       - "com.centurylinklabs.watchtower.enable=true"
-      - homepage.group=Download
-      - homepage.name=Prowlarr
-      - homepage.icon=prowlarr.png
-      - homepage.href=https://prowlarr.${DEFAULT_DOMAIN}
-      - homepage.description=Indexers management
-      - homepage.weight=4
-      - homepage.widget.type=prowlarr
-      - homepage.widget.url=https://prowlarr.${DEFAULT_DOMAIN}
-      - homepage.widget.key=${API_KEY_PROWLARR}
+      - "homepage.group=Media Collectors"
+      - "homepage.name=Prowlarr"
+      - "homepage.icon=prowlarr.png"
+      - "homepage.href=https://prowlarr.${DEFAULT_DOMAIN}"
+      - "homepage.description=Indexers management"
+      - "homepage.weight=4"
+      - "homepage.widget.type=prowlarr"
+      - "homepage.widget.url=https://prowlarr.${DEFAULT_DOMAIN}"
+      - "homepage.widget.key=${API_KEY_PROWLARR}"
 
   radarr:
     # 🔹🔹 RADARR  🔹🔹
@@ -133,15 +133,15 @@ services:
       - ${PATH_DOWNLOAD}:/downloads
     labels:
       - "com.centurylinklabs.watchtower.enable=true"
-      - homepage.group=Media
-      - homepage.name=Radarr
-      - homepage.icon=radarr.png
-      - homepage.href=https://radarr.${DEFAULT_DOMAIN}
-      - homepage.description=Movies management
-      - homepage.weight=1
-      - homepage.widget.type=radarr
-      - homepage.widget.url=http://radarr.${DEFAULT_DOMAIN}
-      - homepage.widget.key=${API_KEY_RADARR}
+      - "homepage.group=Media Collectors"
+      - "homepage.name=Radarr"
+      - "homepage.icon=radarr.png"
+      - "homepage.href=https://radarr.${DEFAULT_DOMAIN}"
+      - "homepage.description=Movies management"
+      - "homepage.weight=1"
+      - "homepage.widget.type=radarr"
+      - "homepage.widget.url=https://radarr.${DEFAULT_DOMAIN}"
+      - "homepage.widget.key=${API_KEY_RADARR}"
 
   lidarr:
     # 🔹🔹 LIDARR  🔹🔹
@@ -161,13 +161,13 @@ services:
     labels:
       - "com.centurylinklabs.watchtower.enable=true"
       - "traefik.enable=true"
-      - "homepage.group=Media"
+      - "homepage.group=Media Collectors"
       - "homepage.name=Lidarr"
       - "homepage.icon=lidarr.png"
       - "homepage.href=https://lidarr.${DEFAULT_DOMAIN}"
       - "homepage.description=Music Management"
       - "homepage.widget.type=lidarr"
-      - "homepage.widget.url=http://lidarr:8686"
+      - "homepage.widget.url=https://lidarr.${DEFAULT_DOMAIN}"
       - "homepage.widget.key=${API_KEY_LIDARR}"
 
   sonarr:
@@ -187,15 +187,15 @@ services:
       - ${PATH_DOWNLOAD}:/downloads #optional
     labels:
       - "com.centurylinklabs.watchtower.enable=true"
-      - homepage.group=Media
-      - homepage.name=Sonarr
-      - homepage.icon=sonarr.png
-      - homepage.href=https://sonarr.${DEFAULT_DOMAIN}
-      - homepage.description=TV Series management
-      - homepage.weight=0
-      - homepage.widget.type=sonarr
-      - homepage.widget.url=http://sonarr:8989
-      - homepage.widget.key=${API_KEY_SONARR}
+      - "homepage.group=Media Collectors"
+      - "homepage.name=Sonarr"
+      - "homepage.icon=sonarr.png"
+      - "homepage.href=https://sonarr.${DEFAULT_DOMAIN}"
+      - "homepage.description=TV Series management"
+      - "homepage.weight=0"
+      - "homepage.widget.type=sonarr"
+      - "homepage.widget.url=https://sonarr.${DEFAULT_DOMAIN}"
+      - "homepage.widget.key=${API_KEY_SONARR}"
 
   readarr:
     image: lscr.io/linuxserver/readarr:develop
@@ -212,15 +212,15 @@ services:
       - ${PATH_MEDIA}/books:/books
     labels:
       - "com.centurylinklabs.watchtower.enable=true"
-      - homepage.group=Media
-      - homepage.name=readarr
-      - homepage.icon=readarr.png
-      - homepage.href=https://readarr.${DEFAULT_DOMAIN}
-      - homepage.description=Media server
-      - homepage.weight=3
-      - homepage.widget.type=readarr
-      - homepage.widget.url=http://readarr.${DEFAULT_DOMAIN}
-      - homepage.widget.key=${API_KEY_READARR}
+      - "homepage.group=Media Collectors"
+      - "homepage.name=readarr"
+      - "homepage.icon=readarr.png"
+      - "homepage.href=https://readarr.${DEFAULT_DOMAIN}"
+      - "homepage.description=Media server"
+      - "homepage.weight=3"
+      - "homepage.widget.type=readarr"
+      - "homepage.widget.url=https://readarr.${DEFAULT_DOMAIN}"
+      - "homepage.widget.key=${API_KEY_READARR}"
 
   bazarr:
     # 🔹🔹 BAZARR  🔹🔹
@@ -240,15 +240,15 @@ services:
       - ${PATH_MEDIA}/movies:/movies
     labels:
       - "com.centurylinklabs.watchtower.enable=true"
-      - homepage.group=Media
-      - homepage.name=Bazarr
-      - homepage.icon=bazarr.png
-      - homepage.href=https://bazarr.${DEFAULT_DOMAIN}
-      - homepage.description=Subtitle management
-      - homepage.weight=0
-      - homepage.widget.type=bazarr
-      - homepage.widget.url=http://bazarr.${DEFAULT_DOMAIN}
-      - homepage.widget.key=${API_KEY_BAZARR}
+      - "homepage.group=Media Collectors"
+      - "homepage.name=Bazarr"
+      - "homepage.icon=bazarr.png"
+      - "homepage.href=https://bazarr.${DEFAULT_DOMAIN}"
+      - "homepage.description=Subtitle management"
+      - "homepage.weight=0"
+      - "homepage.widget.type=bazarr"
+      - "homepage.widget.url=https://bazarr.${DEFAULT_DOMAIN}"
+      - "homepage.widget.key=${API_KEY_BAZARR}"
 
   deluge:
     image: lscr.io/linuxserver/deluge:latest
@@ -278,15 +278,15 @@ services:
     restart: unless-stopped
     labels:
       - "com.centurylinklabs.watchtower.enable=true"
-      - homepage.group=Media
-      - homepage.name=Jellyseerr
-      - homepage.icon=jellyseerr.png
-      - homepage.href=https://jellyseerr.${DEFAULT_DOMAIN}
-      - homepage.description=Media server
-      - homepage.weight=3
-      - homepage.widget.type=jellyseerr
-      - homepage.widget.url=http://jellyseerr:5055
-      - homepage.widget.key=${API_KEY_JELLYSEERR}
+      - "homepage.group=Media"
+      - "homepage.name=Jellyseerr"
+      - "homepage.icon=jellyseerr.png"
+      - "homepage.href=https://jellyseerr.${DEFAULT_DOMAIN}"
+      - "homepage.description=Media server"
+      - "homepage.weight=3"
+      - "homepage.widget.type=jellyseerr"
+      - "homepage.widget.url=https://jellyseerr.${DEFAULT_DOMAIN}"
+      - "homepage.widget.key=${API_KEY_JELLYSEERR}"
 
 networks:
   proxy:

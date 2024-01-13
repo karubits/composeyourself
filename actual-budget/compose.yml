@@ -2,6 +2,7 @@
 version: '3.8'
 services:
   actual_server:
+    container_name: actual_budget
     image: docker.io/actualbudget/actual-server:latest
     environment:
       - TZ=${TZ}

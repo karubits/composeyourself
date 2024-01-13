@@ -7,7 +7,6 @@ services:
     volumes:
       - ${PATH_CONFIG}/homepage:/app/config
       - ${PATH_DATA}/homepage/images:/app/public/images
-      - /var/run/docker.sock:/var/run/docker.sock:ro
     restart: always
     environment:
       - PUID=${PUID}
@@ -15,6 +14,7 @@ services:
       - TZ=${TZ}
     labels:
       - "com.centurylinklabs.watchtower.enable=true"
+      - "traefik.docker.network=proxy"
       - "traefik.enable=true"
       - "traefik.http.routers.homepage.entrypoints=websecure"
       - "traefik.http.routers.homepage.rule=Host(`home.${DEFAULT_DOMAIN}`)"
@@ -22,8 +22,11 @@ services:
       - "traefik.http.services.homepage.loadbalancer.server.port=3000"
     networks:
       - proxy
+      - docker-proxy
 
 networks:
   proxy:
+    external: true
+  docker-proxy:
     external: true
 

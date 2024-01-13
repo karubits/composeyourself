@@ -27,15 +27,15 @@ services:
       - "traefik.http.routers.jellyfin.rule=Host(`jellyfin.${DEFAULT_DOMAIN}`)"
       - "traefik.http.routers.jellyfin.service=jellyfin"
       - "traefik.http.services.jellyfin.loadbalancer.server.port=8096"
-      - homepage.group=Media
-      - homepage.name=Jellyfin
-      - homepage.icon=jellyfin.png
-      - homepage.href=https://jellyfin.${DEFAULT_DOMAIN}
-      - homepage.description=Media server
-      - homepage.weight=3
-      - homepage.widget.type=jellyfin
-      - homepage.widget.url=https://jellyfin.${DEFAULT_DOMAIN}
-      - homepage.widget.key=${JELLYFIN_API_KEY}
+      - "homepage.group=Media"
+      - "homepage.name=Jellyfin"
+      - "homepage.icon=jellyfin.png"
+      - "homepage.href=https://jellyfin.${DEFAULT_DOMAIN}"
+      - "homepage.description=Media"
+      - "homepage.weight=3"
+      - "homepage.widget.type=jellyfin"
+      - "homepage.widget.url=https://jellyfin.${DEFAULT_DOMAIN}"
+      - "homepage.widget.key=${JELLYFIN_API_KEY}"
     devices:
       - "/dev/dri:/dev/dri"
     networks:
