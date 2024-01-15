@@ -15,6 +15,7 @@ services:
       - ${PATH_CONFIG}/code-server/config:/config
       - ${PATH_CONFIG}:/code/configs
       - ${PATH_STACKS}:/code/stacks
+      # Github SSH Deploy Support
       - ${PATH_GIT_DEPLOY_KEY}:/root/.ssh/github-deploy:ro
       - ${PATH_GIT_DEPLOY_KEY}.pub:/root/.ssh/github-deploy.pub:ro
       - /root/.ssh/known_hosts:/root/.ssh/known_hosts:ro
