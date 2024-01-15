@@ -1,4 +1,4 @@
-# Compose Yourself
+# Compose Yourself 🐳
 
 A collection of docker compose files for self hosting services. 
 
