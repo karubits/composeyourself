@@ -15,6 +15,7 @@ services:
       - ${PATH_CONFIG}/code-server/config:/config
       - ${PATH_CONFIG}:/code/configs
       - ${PATH_STACKS}:/code/stacks
+      - ${PATH_GIT_DEPLOY_KEY}:/root/.ssh/github-deploy:ro
     networks:
       proxy:
     labels:
