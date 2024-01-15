@@ -5,19 +5,16 @@ services:
     image: lscr.io/linuxserver/code-server:latest
     container_name: code-server
     environment:
-      - PUID=1000
-      - PGID=1000
+      - PUID=${PUID}
+      - PGID=${PGID}
       - TZ=${TZ}
       - PASSWORD=${PASSWORD} #optional
-      #- HASHED_PASSWORD= #optional
-      #- SUDO_PASSWORD=password #optional
-      #- SUDO_PASSWORD_HASH= #optional
       - PROXY_DOMAIN=code.${DEFAULT_DOMAIN} #optional
       - DEFAULT_WORKSPACE=/config/workspace #optional
     volumes:
-      - ${PATH_CONFIG}/code-server/config:/home/coder/.config
-      - /opt/containers/stacks:/config/workspace/stacks
-      - /opt/containers/configs:/config/workspace/configs
+      - ${PATH_CONFIG}/code-server/config:/config
+      - ${PATH_CONFIG}:/code/configs
+      - ${PATH_STACKS}:/code/stacks
     networks:
       proxy:
     labels:

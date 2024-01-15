@@ -240,6 +240,7 @@ services:
       - ${PATH_CONFIG}/bazarr:/config
       - ${PATH_MEDIA}/tv:/tv
       - ${PATH_MEDIA}/movies:/movies
+      - ${PATH_DOWNLOAD}:/downloads
     labels:
       - "com.centurylinklabs.watchtower.enable=true"
       - "homepage.group=Media Collectors"
@@ -265,6 +266,16 @@ services:
     volumes:
       - ${PATH_CONFIG}/deluge:/config
       - ${PATH_DOWNLOAD}:/downloads
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+      - "homepage.group=Downloads"
+      - "homepage.name=Deluge"
+      - "homepage.icon=deluge.png"
+      - "homepage.href=https://deluge.${DEFAULT_DOMAIN}"
+      - "homepage.weight=1"
+      - "homepage.widget.type=deluge"
+      - "homepage.widget.url=https://deluge.${DEFAULT_DOMAIN}"
+      - "homepage.widget.password=${PASS_DELUGE}"
 
   jellyseerr:
     # 🔹🔹 JELLYSEERR 🔹🔹

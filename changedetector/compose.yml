@@ -1,0 +1,36 @@
+version: "3.8"
+services:
+  changedetection:
+    image: lscr.io/linuxserver/changedetection.io:latest
+    container_name: changedetection
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - ${PATH_CONFIG}/changedetection:/config
+    restart: unless-stopped
+    networks:
+     - proxy
+    labels:
+      # WatchTower
+      - "com.centurylinklabs.watchtower.enable=true"
+      # Traefik
+      - "traefik.enable=true"
+      - "traefik.http.routers.changedetection.entrypoints=websecure"
+      - "traefik.http.routers.changedetection.rule=Host(`changedetection.${DEFAULT_DOMAIN}`)"
+      - "traefik.http.routers.changedetection.service=changedetection"
+      - "traefik.http.services.changedetection.loadbalancer.server.port=5000"
+      # Homepage
+      - "homepage.group=Tools"
+      - "homepage.href=https://changedetection.${DEFAULT_DOMAIN}"
+      - "homepage.icon=changedetection-io.png"
+      - "homepage.key=${API_KEY_CHANGEDETECTION}"
+      - "homepage.name=ChangeDetection"
+      - "homepage.type=changedetectionio"
+      - "homepage.url=https://changedetection.${DEFAULT_DOMAIN}"
+      - "homepage.weight=3"
+
+networks:
+ proxy:
+   external: true

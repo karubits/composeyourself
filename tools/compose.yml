@@ -69,24 +69,24 @@ services:
       - proxy
 
   speedtest-tracker:
+    image: 'ghcr.io/alexjustesen/speedtest-tracker:latest'
     container_name: speedtest-tracker
     restart: unless-stopped
     environment:
-        - PUID=${PUID}
-        - PGID=${PGID}
-        - TZ=${TZ}
-        - DB_CONNECTION=mysql
-        - DB_HOST=speedtest-tracker-db
-        - DB_PORT=3306
-        - DB_DATABASE=${SPEEDTEST_DB_NAME}
-        - DB_USERNAME=${SPEEDTEST_DB_USER}
-        - DB_PASSWORD=${SPEEDTEST_DB_PASS}
+      - AUTH=true
+      - DB_CONNECTION=mysql
+      - DB_DATABASE=${SPEEDTEST_DB_NAME}
+      - DB_HOST=speedtest-tracker-db
+      - DB_PASSWORD=${SPEEDTEST_DB_PASS}
+      - DB_PORT=3306
+      - DB_USERNAME=${SPEEDTEST_DB_USER}
+      - PGID=${PGID}
+      - PUID=${PUID}
+      - TZ=${TZ}
     volumes:
-        - speedtest-app:/config
-        - '/path/to/directory/web:/etc/ssl/web'
-    image: 'ghcr.io/alexjustesen/speedtest-tracker:latest'
+      - ${PATH_CONFIG}/speedtest-tracker:/config
     depends_on:
-        - speedtest-tracker-db
+      - speedtest-tracker-db
     labels:
       - "com.centurylinklabs.watchtower.enable=true"
       - "traefik.enable=true"
@@ -101,6 +101,8 @@ services:
       - "homepage.href=https://speedtest-tracker.${DEFAULT_DOMAIN}"
       - "homepage.icon=speedtest-tracker.png"
       - "homepage.weight=3"
+      - "homepage.type=speedtest"
+      - "homepage.url=https://speedtest-tracker.${DEFAULT_DOMAIN}"
     networks:
       - proxy
       - default
@@ -110,16 +112,12 @@ services:
     image: mariadb:10
     restart: unless-stopped
     environment:
-        - MARIADB_DATABASE=${SPEEDTEST_DB_NAME}
-        - MARIADB_USER=${SPEEDTEST_DB_USER}
-        - MARIADB_PASSWORD=${SPEEDTEST_DB_PASS}
-        - MARIADB_RANDOM_ROOT_PASSWORD=true
+      - MARIADB_DATABASE=${SPEEDTEST_DB_NAME}
+      - MARIADB_PASSWORD=${SPEEDTEST_DB_PASS}
+      - MARIADB_RANDOM_ROOT_PASSWORD=true
+      - MARIADB_USER=${SPEEDTEST_DB_USER}
     volumes:
-        - speedtest-db:/var/lib/mysql
-
-volumes:
-  speedtest-app:
-  speedtest-db:
+      - ${PATH_DATA}/speedtest-tracker/db:/var/lib/mysql
 
 networks:
   proxy:
