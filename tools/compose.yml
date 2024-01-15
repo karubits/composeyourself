@@ -118,6 +118,8 @@ services:
       - MARIADB_USER=${SPEEDTEST_DB_USER}
     volumes:
       - ${PATH_DATA}/speedtest-tracker/db:/var/lib/mysql
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
 
 networks:
   proxy:

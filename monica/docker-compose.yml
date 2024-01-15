@@ -6,7 +6,7 @@ services:
 
   monica-app:
     container_name: monica-app
-    image: monica:latest
+    image: monica:4
     restart: always
     depends_on:
       - monica-db
@@ -40,6 +40,8 @@ services:
       - /etc/timezone:/etc/timezone:ro
     env_file:
       - .monica.env
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
 
 volumes:
   monica_app:

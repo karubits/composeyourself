@@ -11,6 +11,7 @@ services:
       - WATCHTOWER_CLEANUP=true
       - WATCHTOWER_LABEL_ENABLE=true
       - WATCHTOWER_INCLUDE_RESTARTING=true
-      - WATCHTOWER_POLL_INTERVAL=259200
-      - WATCHTOWER_NOTIFICATIONS=shoutrrr
-      - WATCHTOWER_NOTIFICATION_URL=ntfy://ntfy.${DEFAULT_DOMAIN}/notifiations?title=WatchtowerUpdates
+      - WATCHTOWER_POLL_INTERVAL=172800
+      - WATCHTOWER_LOG_LEVEL=warn
+      # - WATCHTOWER_NOTIFICATIONS=shoutrrr
+      # - WATCHTOWER_NOTIFICATION_URL=ntfy://ntfy.${DEFAULT_DOMAIN}/notifiations?title=WatchtowerUpdates

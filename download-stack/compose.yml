@@ -38,6 +38,8 @@ services:
     networks: 
       - proxy
     labels:
+      # Watchtower
+      - "com.centurylinklabs.watchtower.enable=true"
       # Homepage
       - "homepage.group=Downloads"
       - "homepage.name=Gluetun"
@@ -107,7 +109,9 @@ services:
     volumes:
       - ${PATH_CONFIG}/prowlarr:/config
     labels:
+      # Watchtower
       - "com.centurylinklabs.watchtower.enable=true"
+      # Homepage
       - "homepage.group=Media Collectors"
       - "homepage.name=Prowlarr"
       - "homepage.icon=prowlarr.png"
@@ -134,7 +138,9 @@ services:
       - ${PATH_MEDIA}/movies:/movies
       - ${PATH_DOWNLOAD}:/downloads
     labels:
+      # Watchtower
       - "com.centurylinklabs.watchtower.enable=true"
+      # Homepage
       - "homepage.group=Media Collectors"
       - "homepage.name=Radarr"
       - "homepage.icon=radarr.png"
@@ -161,7 +167,9 @@ services:
       - ${PATH_MEDIA}/music:/music #optional
       - ${PATH_DOWNLOAD}:/downloads #optional
     labels:
+      # Watchtower
       - "com.centurylinklabs.watchtower.enable=true"
+      # Homepage
       - "traefik.enable=true"
       - "homepage.group=Media Collectors"
       - "homepage.name=Lidarr"
@@ -188,7 +196,9 @@ services:
       - ${PATH_MEDIA}/tv:/tv #optional
       - ${PATH_DOWNLOAD}:/downloads #optional
     labels:
+      # Watchtower
       - "com.centurylinklabs.watchtower.enable=true"
+      # Homepage
       - "homepage.group=Media Collectors"
       - "homepage.name=Sonarr"
       - "homepage.icon=sonarr.png"
@@ -213,7 +223,9 @@ services:
       - ${PATH_DOWNLOAD}:/downloads
       - ${PATH_MEDIA}/books:/books
     labels:
+      # Watchtower
       - "com.centurylinklabs.watchtower.enable=true"
+      # Homepage
       - "homepage.group=Media Collectors"
       - "homepage.name=readarr"
       - "homepage.icon=readarr.png"
@@ -242,7 +254,9 @@ services:
       - ${PATH_MEDIA}/movies:/movies
       - ${PATH_DOWNLOAD}:/downloads
     labels:
+      # Watchtower
       - "com.centurylinklabs.watchtower.enable=true"
+      # Homepage
       - "homepage.group=Media Collectors"
       - "homepage.name=Bazarr"
       - "homepage.icon=bazarr.png"
@@ -267,7 +281,9 @@ services:
       - ${PATH_CONFIG}/deluge:/config
       - ${PATH_DOWNLOAD}:/downloads
     labels:
+      # Watchtower
       - "com.centurylinklabs.watchtower.enable=true"
+      # Homepage
       - "homepage.group=Downloads"
       - "homepage.name=Deluge"
       - "homepage.icon=deluge.png"
@@ -290,7 +306,9 @@ services:
       - ${PATH_CONFIG}/jellyseerr:/app/config
     restart: unless-stopped
     labels:
+      # Watchtower
       - "com.centurylinklabs.watchtower.enable=true"
+      # Homepage
       - "homepage.group=Media"
       - "homepage.name=Jellyseerr"
       - "homepage.icon=jellyseerr.png"

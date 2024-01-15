@@ -18,13 +18,13 @@ services:
       - FB_PORT=8080
       - FB_USERNAME=${FB_USER}
     labels:
+      - "com.centurylinklabs.watchtower.enable=true"
       - "homepage.name=File Browser"
       - "homepage.description=GUI File Navigator"
       - "homepage.group=Tools"
       - "homepage.href=https://filebrowser.${DEFAULT_DOMAIN}"
       - "homepage.weight=3"
       - "homepage.icon=filebrowser.png"
-      - "com.centurylinklabs.watchtower.enable=true"
       - "traefik.enable=true"
       - "traefik.http.routers.filebrowser.entrypoints=websecure"
       - "traefik.http.routers.filebrowser.rule=Host(`filebrowser.${DEFAULT_DOMAIN}`)"

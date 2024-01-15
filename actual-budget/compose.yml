@@ -10,7 +10,6 @@ services:
       - ${PATH_DATA}/actual-budget:/data
     restart: unless-stopped
     labels:
-      - "com.centurylinklabs.watchtower.enable=true"
       - "traefik.enable=true"
       - "traefik.http.routers.budget.entrypoints=websecure"
       - "traefik.http.routers.budget.rule=Host(`budget.${DEFAULT_DOMAIN}`)"

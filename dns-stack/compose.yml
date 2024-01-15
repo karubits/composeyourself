@@ -13,6 +13,9 @@ services:
     networks:
       default:
         ipv4_address: 172.18.198.2
+    labels:
+      # Watchtower
+      - "com.centurylinklabs.watchtower.enable=true"
 
   pdns_auth_overlay:
     image: powerdns/pdns-auth-48:latest
@@ -26,6 +29,9 @@ services:
     networks:
       default:
         ipv4_address: 172.18.198.3
+    labels:
+      # Watchtower
+      - "com.centurylinklabs.watchtower.enable=true"
 
   adguardhome_local:
     image: 'adguard/adguardhome:latest'

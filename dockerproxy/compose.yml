@@ -16,6 +16,9 @@ services:
     restart: unless-stopped
     networks:
       - docker-proxy
+    labels:
+      # Watchtower
+      - "com.centurylinklabs.watchtower.enable=true"
 
 networks:
   proxy:
