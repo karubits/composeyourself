@@ -94,6 +94,11 @@ services:
       - "traefik.http.routers.jellyseerr.rule=Host(`jellyseerr.${DEFAULT_DOMAIN}`)"
       - "traefik.http.routers.jellyseerr.service=jellyseerr"
       - "traefik.http.services.jellyseerr.loadbalancer.server.port=5055"
+      # qBittorrent
+      - "traefik.http.routers.qbt.entrypoints=websecure"
+      - "traefik.http.routers.qbt.rule=Host(`qbt.${DEFAULT_DOMAIN}`)"
+      - "traefik.http.routers.qbt.service=qbt"
+      - "traefik.http.services.qbt.loadbalancer.server.port=8080"
 
   prowlarr:
     # 🔹🔹 PROWLARR  🔹🔹
@@ -267,31 +272,58 @@ services:
       - "homepage.widget.url=https://bazarr.${DEFAULT_DOMAIN}"
       - "homepage.widget.key=${API_KEY_BAZARR}"
 
-  deluge:
-    image: lscr.io/linuxserver/deluge:latest
-    container_name: deluge
+  # deluge:
+  #   image: lscr.io/linuxserver/deluge:latest
+  #   container_name: deluge
+  #   network_mode: "service:gluetun"
+  #   restart: unless-stopped
+  #   environment:
+  #     - PGID=${PGID}
+  #     - PUID=${PUID}
+  #     - TZ=${TZ}
+  #     - DELUGE_LOGLEVEL=error #optional
+  #   volumes:
+  #     - ${PATH_CONFIG}/deluge:/config
+  #     - ${PATH_DOWNLOAD}:/downloads
+  #   labels:
+  #     # Watchtower
+  #     - "com.centurylinklabs.watchtower.enable=true"
+  #     # Homepage
+  #     - "homepage.group=Downloads"
+  #     - "homepage.name=Deluge"
+  #     - "homepage.icon=deluge.png"
+  #     - "homepage.href=https://deluge.${DEFAULT_DOMAIN}"
+  #     - "homepage.weight=1"
+  #     - "homepage.widget.type=deluge"
+  #     - "homepage.widget.url=https://deluge.${DEFAULT_DOMAIN}"
+  #     - "homepage.widget.password=${PASS_DELUGE}"
+
+  qbittorrent:
+    image: lscr.io/linuxserver/qbittorrent:latest
+    container_name: qbittorrent
     network_mode: "service:gluetun"
     restart: unless-stopped
     environment:
       - PGID=${PGID}
       - PUID=${PUID}
       - TZ=${TZ}
-      - DELUGE_LOGLEVEL=error #optional
+      - WEBUI_PORT=8080
     volumes:
-      - ${PATH_CONFIG}/deluge:/config
+      - ${PATH_CONFIG}/qbittorrent:/config
       - ${PATH_DOWNLOAD}:/downloads
     labels:
       # Watchtower
       - "com.centurylinklabs.watchtower.enable=true"
       # Homepage
       - "homepage.group=Downloads"
-      - "homepage.name=Deluge"
-      - "homepage.icon=deluge.png"
-      - "homepage.href=https://deluge.${DEFAULT_DOMAIN}"
+      - "homepage.name=Qbittorrent"
+      - "homepage.icon=qbittorrent.png"
+      - "homepage.href=https://qbt.${DEFAULT_DOMAIN}"
       - "homepage.weight=1"
-      - "homepage.widget.type=deluge"
-      - "homepage.widget.url=https://deluge.${DEFAULT_DOMAIN}"
-      - "homepage.widget.password=${PASS_DELUGE}"
+      - "homepage.widget.type=qbittorrent"
+      - "homepage.widget.url=https://qbt.${DEFAULT_DOMAIN}"
+      - "homepage.widget.password=${USER_QBT}"
+      - "homepage.widget.password=${PASS_QBT}"
 
   jellyseerr:
     # 🔹🔹 JELLYSEERR 🔹🔹
