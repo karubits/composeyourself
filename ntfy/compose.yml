@@ -4,27 +4,35 @@ services:
   ntfy:
     user: "${PUID}:${PGID}"
     image: binwiederhier/ntfy
-    container_name: ntfy-server
+    container_name: ntfy
     command:
       - serve
     environment:
-      - PGID=${PGID}
-      - PUID=${PUID}
       - TZ=${TZ}
+      - NTFY_BASE_URL=http://ntfy.${DEFAULT_DOMAIN}
+      - NTFY_BEHIND_PROXY=true
+      - NTFY_LISTEN_HTTP=0.0.0.0:4002
     volumes:
       - ${PATH_CACHE}/ntfy:/var/cache/ntfy
       - ${PATH_CONFIG}/ntfy:/etc/ntfy
-#    healthcheck: # optional: remember to adapt the host:port to your environment
-#        test: ["CMD-SHELL", "wget -q --tries=1 http://localhost:8150/v1/health -O - | grep -Eo '\"healthy\"\\s*:\\s*true' || exit 1"]
-#        interval: 60s
-#        timeout: 10s
-#        retries: 3
-#        start_period: 40s
+    healthcheck: # optional: remember to adapt the host:port to your environment
+        test: ["CMD-SHELL", "wget -q --tries=1 http://localhost:4002/v1/health -O - | grep -Eo '\"healthy\"\\s*:\\s*true' || exit 1"]
+        interval: 60s
+        timeout: 10s
+        retries: 3
+        start_period: 40s
     restart: unless-stopped
     labels:
-      - "com.centurylinklabs.watchtower.enable=true"
       - "traefik.enable=true"
       - "traefik.http.routers.ntfy.entrypoints=websecure"
       - "traefik.http.routers.ntfy.rule=Host(`ntfy.${DEFAULT_DOMAIN}`)"
       - "traefik.http.routers.ntfy.service=ntfy"
-      - "traefik.http.services.ntfy.loadbalancer.server.port=80"
+      - "traefik.http.services.ntfy.loadbalancer.server.port=4002"
+      # Watchtower
+      - "com.centurylinklabs.watchtower.enable=true"
+    networks:
+      - proxy
+
+networks:
+  proxy:
+    external: true
