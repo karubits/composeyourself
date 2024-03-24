@@ -30,8 +30,6 @@ services:
   scrutiny:
     container_name: scrutiny
     image: ghcr.io/analogj/scrutiny:master-web
-    ports:
-      - 8080:8080
     volumes:
       - ${DIR_CONFIG}/scrutiny/config:/opt/scrutiny/config
     environment:
@@ -48,3 +46,10 @@ services:
     networks:
       - notifications
       - monitoring
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+      - "traefik.enable=true"
+      - "traefik.http.routers.ittools.entrypoints=websecure"
+      - "traefik.http.routers.ittools.rule=Host(`it-tools.${DEFAULT_DOMAIN}`)"
+      - "traefik.http.routers.ittools.service=ittools"
+      - "traefik.http.services.ittools.loadbalancer.server.port=8080"

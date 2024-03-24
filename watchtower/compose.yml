@@ -6,14 +6,14 @@ services:
     image: containrrr/watchtower
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-    command: --interval 30
+    #command:
     restart: unless-stopped
     environment:
       - TZ=${TZ}
       - WATCHTOWER_CLEANUP=true
       - WATCHTOWER_LABEL_ENABLE=true
       - WATCHTOWER_INCLUDE_RESTARTING=true
-      - WATCHTOWER_POLL_INTERVAL=172800
+      - WATCHTOWER_POLL_INTERVAL=518400
       - WATCHTOWER_LOG_LEVEL=debug
       - WATCHTOWER_NOTIFICATIONS=shoutrrr
       - WATCHTOWER_NOTIFICATION_URL=ntfy://ntfy.${DEFAULT_DOMAIN}/OLA2hRH7g8Q7ghwl?title=WatchtowerUpdates
