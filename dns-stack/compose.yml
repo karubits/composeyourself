@@ -1,5 +1,4 @@
 ---
-version: '3.8'
 services:
   pdns_auth_local:
     image: powerdns/pdns-auth-48:latest
