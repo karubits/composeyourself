@@ -1,0 +1,47 @@
+---
+name: pterodactyl-wings1
+
+services:
+  wings: 
+    container_name: pterodactyl-wings1
+    image: ghcr.io/pterodactyl/wings
+    restart: always
+    ports:
+      - "2022:2022"
+    tty: true
+    environment:
+      TZ: "${TZ}"
+      WINGS_UID: 988
+      WINGS_GID: 988
+      WINGS_USERNAME: admin
+      WINGS_DOMAIN: "gameserver-node01.${DEFAULT_DOMAIN}"
+    volumes:
+      - "/tmp/pterodactyl/:/tmp/pterodactyl/"
+      - "/var/lib/docker/containers/:/var/lib/docker/containers/"
+      - "/var/log/pterodactyl/:/var/log/pterodactyl/"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "${PATH_CONFIG}/pterodactyl/wings/config:/etc/pterodactyl/"
+      - "${PATH_DATA}/pterodactyl/wings/var:/var/lib/pterodactyl/"
+    labels:
+      - "traefik.enable=true"
+      # HTTPS
+      - "traefik.http.routers.gameserver-node01.entrypoints=websecure"
+      - "traefik.http.routers.gameserver-node01.rule=Host(`gameserver-node01.${DEFAULT_DOMAIN}`)"
+      - "traefik.http.routers.gameserver-node01.service=gameserver-node01"
+      - "traefik.http.services.gameserver-node01.loadbalancer.server.port=443"
+    networks:
+      - wings0
+      - proxy
+
+networks:
+  wings0:
+    name: wings0
+    ipam:
+      config:
+        - subnet: 10.99.23.144/29
+    driver: bridge
+    driver_opts:
+      com.docker.network.bridge.name: wings0
+
+  proxy:
+    external: true

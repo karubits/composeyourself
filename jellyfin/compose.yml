@@ -15,9 +15,10 @@ services:
       - ${PATH_MEDIA}/movies:/movies
       - ${PATH_MEDIA}/music:/music
       - ${PATH_MEDIA}/tv:/tv
+      - ${PATH_MEDIA}/videos:/videos
     restart: 'unless-stopped'
-    ports:
-      - "7359:7359/udp"  # Client Discovery
+#    ports:
+      #- "7359:7359/udp"  # Client Discovery
     labels:
       - "com.centurylinklabs.watchtower.enable=true"
       - "traefik.docker.network=proxy"
@@ -40,6 +41,23 @@ services:
     networks:
       - default
       - proxy
+
+  plex:
+    container_name: plex
+    image: lscr.io/linuxserver/plex:latest
+    environment:
+      - TZ=${TZ}
+      - VERSION=docker
+      - PLEX_CLAIM="claim-9zLyz8G2PDTzhsxn9cEC"
+    volumes:
+      - ${PATH_CONFIG}/plex:/config
+      - ${PATH_MEDIA}/videos:/videos
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+    restart: unless-stopped
+    devices:
+      - "/dev/dri:/dev/dri"
+    network_mode: host 
 
 networks:
   default:

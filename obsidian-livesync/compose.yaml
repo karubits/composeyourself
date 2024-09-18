@@ -1,4 +1,4 @@
-version: "3.8"
+---
 services:
   obsidian-livesync:
     image: couchdb:3.3

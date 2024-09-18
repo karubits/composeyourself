@@ -1,5 +1,5 @@
-version: "3.8"
-
+---
+name: nextcloud
 services:
   nextcloud-web:
     hostname: nextcloud-web

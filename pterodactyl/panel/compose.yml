@@ -1,0 +1,74 @@
+---
+name: pterodactyl-panel
+
+services:
+  pterodactyl_db:
+    container_name: pterodactyl_db
+    image: mariadb:10.5
+    restart: always
+    command: --default-authentication-plugin=mysql_native_password
+    volumes:
+      - "${PATH_DATA}/pterodactyl/db:/var/lib/mysql"
+    environment:
+      MYSQL_DATABASE: "panel"
+      MYSQL_PASSWORD: "${DB_PASS}"
+      MYSQL_ROOT_PASSWORD: "${DB_ROOT_PASS}"
+      MYSQL_USER: "pterodactyl"
+      
+  pterodactyl_cache:
+    container_name: pterodactyl_cache
+    image: redis:alpine
+    restart: always
+  
+  pterodactyl_panel:
+    container_name: pterodactyl_panel
+    image: ghcr.io/pterodactyl/panel:latest
+    restart: always
+    volumes:
+      - "${PATH_DATA}/pterodactyl/var:/app/var"
+      - "${PATH_CONFIG}/pterodactyl/nginx:/etc/nginx/http.d"
+      - "${PATH_CONFIG}/pterodactyl/le:/etc/letsencrypt"
+      - "${PATH_DATA}/pterodactyl/logs:/app/storage/logs"
+    environment:
+      APP_ENV: "production"
+      APP_ENVIRONMENT_ONLY: "false"
+      APP_SERVICE_AUTHOR: "${EMAIL}"
+      APP_TIMEZONE: "${TZ}"
+      APP_URL: "https://pterodactyl.${DEFAULT_DOMAIN}"
+      PANEL_DOMAIN: "pterodactyl.${DEFAULT_DOMAIN}"
+      CACHE_DRIVER: "redis"
+      DB_HOST: "pterodactyl_db"
+      DB_PASSWORD: "${DB_PASS}"
+      DB_PORT: "3306"
+      MAIL_DRIVER: "smtp"
+      MAIL_ENCRYPTION: "true"
+      MAIL_FROM: "noreply@${DEFAULT_DOMAIN}"
+      MAIL_HOST: "${SMTP_SERVER}"
+      MAIL_PASSWORD: "${SMTP_PASS}"
+      MAIL_PORT: "587"
+      MAIL_USERNAME: "${SMTP_USER}"
+      QUEUE_DRIVER: "redis"
+      REDIS_HOST: "pterodactyl_cache"
+      SESSION_DRIVER: "redis"
+      TRUSTED_PROXIES: "*"
+    depends_on:
+      - pterodactyl_db
+      - pterodactyl_cache
+    labels:
+      - "traefik.enable=true"
+      # HTTPS
+      - "traefik.http.routers.pterodactyl_panels.entrypoints=websecure"
+      - "traefik.http.routers.pterodactyl_panels.rule=Host(`pterodactyl.${DEFAULT_DOMAIN}`)"
+      - "traefik.http.routers.pterodactyl_panels.service=pterodactyl_panels"
+      - "traefik.http.services.pterodactyl_panels.loadbalancer.server.port=80"
+    networks:
+      - default
+      - proxy
+
+networks:
+  default:
+    ipam:
+      config:
+        - subnet: 10.66.22.0/29
+  proxy:
+    external: true

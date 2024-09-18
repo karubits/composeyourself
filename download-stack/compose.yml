@@ -34,7 +34,7 @@ services:
       - VPN_PORT_FORWARDING=on
       - VPN_SERVICE_PROVIDER=${VPN_PROVIDER}
       - VPN_TYPE=openvpn
-    networks: 
+    networks:
       - proxy
     labels:
       # Watchtower

@@ -1,0 +1,53 @@
+---
+services:
+  bookstack:
+    image: lscr.io/linuxserver/bookstack
+    container_name: bookstack
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+      - APP_URL=https://bookstack.${DEFAULT_DOMAIN}
+      - DB_HOST=bookstack_db
+      - DB_PORT=3306
+      - DB_USER=${DB_USER}
+      - DB_PASS=${DB_PASS}
+      - DB_DATABASE=${DB_NAME}
+    volumes:
+      - ${PATH_CONFIG}/bookstack:/config
+    ports:
+      - 6875:80
+    restart: unless-stopped
+    depends_on:
+      - bookstack_db
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+      - "traefik.docker.network=proxy"
+      - "traefik.enable=true"
+      - "traefik.http.routers.bookstack.entrypoints=websecure"
+      - "traefik.http.routers.bookstack.rule=Host(`bookstack.${DEFAULT_DOMAIN}`)"
+      - "traefik.http.routers.bookstack.service=bookstack"
+      - "traefik.http.services.bookstack.loadbalancer.server.port=80"
+    networks:
+      - default
+      - proxy
+
+  bookstack_db:
+    image: lscr.io/linuxserver/mariadb
+    container_name: bookstack_db
+    environment:
+      - PUID=${PUID}
+      - PGID=${GUID}
+      - TZ=${TZ}
+      - MYSQL_ROOT_PASSWORD=${DB_ROOT_PASS}
+      - MYSQL_DATABASE=${DB_NAME}
+      - MYSQL_USER=${DB_USER}
+      - MYSQL_PASSWORD=${DB_PASS}
+    volumes:
+      - ${PATH_DATA}/bookstack/db:/config
+    restart: unless-stopped
+
+networks:
+  proxy:
+    name: proxy
+    external: true

@@ -30,7 +30,6 @@
 # For more extensive installation and update instructions, refer to the
 # documentation.
 ---
-version: "3.8"
 services:
   paperless-broker:
     container_name: paperless-broker
