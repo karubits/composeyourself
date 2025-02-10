@@ -1,0 +1,53 @@
+# Static Configuration
+global:
+  checkNewVersion: true
+  sendAnonymousUsage: false
+
+api:
+  dashboard: true
+  insecure: false
+
+log:
+  level: DEBUG
+
+entryPoints:
+  web:
+    address: ":80"
+    http:
+      redirections:
+        entryPoint:
+          to: websecure
+          scheme: https
+  websecure:
+    address: ":443"
+    http:
+      tls:
+        certResolver: le
+        domains:
+          - main: "${DEFAULT_DOMAIN}"
+            sans: "*.${DEFAULT_DOMAIN}"
+  rcon:
+    address: ":25575"
+
+providers:
+  docker:
+    endpoint: "unix:///var/run/docker.sock"
+    watch: true
+    exposedByDefault: false
+    network: proxy
+
+serversTransport:
+  insecureSkipVerify: true
+
+certificatesResolvers:
+  le:
+    acme:
+      email: "karubits@proton.me"
+      storage: "/etc/traefik/acme.json"
+      dnsChallenge:
+        provider: porkbun
+        delayBeforeCheck: 0
+        resolvers:
+          - "1.1.1.1"
+          - "9.9.9.9"
+      keyType: EC256 

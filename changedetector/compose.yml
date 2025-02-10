@@ -11,7 +11,7 @@ services:
       - ${PATH_CONFIG}/changedetection:/config
     restart: unless-stopped
     networks:
-     - proxy
+      - proxy
     labels:
       # WatchTower
       - "com.centurylinklabs.watchtower.enable=true"
@@ -32,5 +32,5 @@ services:
       - "homepage.weight=3"
 
 networks:
- proxy:
-   external: true
+  proxy:
+    external: true
