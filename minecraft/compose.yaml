@@ -1,0 +1,190 @@
+---
+services:
+  mc-router:
+    container_name: mc-router
+    # You can use mc-router to route external traffic to your
+    # servers via lazymc using the Host header.
+    #
+    # This allows you to run multiple servers on the same external port
+    image: itzg/mc-router
+    # You need to assign a static IP to the mc-router container
+    # the IPs should start at .2 as .1 is reserved for the gateway
+    networks:
+      minecraft-network:
+        ipv4_address: 10.57.81.254
+    depends_on:
+      - lazymc
+    environment:
+      # Primary is exposed on port 25565 of lazymc
+      # Secondary is exposed on port 25566 of lazmc
+      MAPPING: |
+        mc1.${DEFAULT_DOMAIN}=lazymc:25565
+        mc2.${DEFAULT_DOMAIN}=lazymc:25566
+        mc3.${DEFAULT_DOMAIN}=lazymc:25567
+    # If using mc-router you only need to expose port 25565
+    # on this container alone
+    ports:
+      - "25565:25565"
+
+  lazymc:
+    container_name: lazymc
+    image: ghcr.io/joesturge/lazymc-docker-proxy:latest
+    environment:
+      # Required to find the container to manage it
+      LAZYMC_GROUP: mc
+    restart: unless-stopped
+    volumes:
+      # you should mount the minecraft server dir under /server, using read only.
+      - ${PATH_DATA}/minecraft01:/data01:ro
+      - ${PATH_DATA}/minecraft02:/data02:ro
+      - ${PATH_DATA}/minecraft03:/data03:ro
+
+      # - data:/server:ro
+      # you need to supply the docker socket, so that the container can run docker command
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      minecraft-network:
+        ipv4_address: 10.57.81.2
+
+  mc-server01:
+    image: itzg/minecraft-server:java17
+    container_name: mc-server01
+    environment:
+      TZ:
+      EULA: "TRUE" # Agree to the EULA
+      TYPE: AUTO_CURSEFORGE
+      CF_API_KEY:
+      CF_SLUG: "better-mc-forge-bmc4"
+      CF_FILE_ID: 6048060
+      INIT_MEMORY: 4G
+      MAX_MEMORY: 10G
+      ENABLE_LAN_BROADCAST: "TRUE" # Enable LAN discovery
+      ENABLE_COMMAND_BLOCK: "true"     # Enable command blocks (cheats)
+      ALLOW_CHEATS: "true"             # Allow cheats (e.g., /gamemode, /tp)
+      MOTD: "Running %MODPACK_NAME% version %env:MODPACK_VERSION% Creative Mode"
+      DIFFICULTY: "normal"
+      MODE: "creative"
+      SERVER_NAME: "MC1 - BMC -Creative"
+      ALLOW_FLIGHT: TRUE
+      ONLINE_MODE: FALSE
+      ENABLE_RCON: "true"
+      RCON_PASSWORD:
+      RCON_PORT: 25575
+      CREATE_CONSOLE_IN_PIPE: "true"  # Enable console piping
+      OPS: |
+        karubits
+    deploy:
+      resources:
+        limits:
+          cpus: "3"
+          memory: 12G
+        reservations:
+          cpus: "2"
+          memory: 10G
+    healthcheck:
+      test: mc-health
+      start_period: 1m
+      interval: 5s
+      retries: 20
+    volumes:
+      - ${PATH_DATA}/minecraft01:/data
+    # This container should be managed solely by the lazymc container
+    # so set restart to no, or else the container will start again...
+    restart: no
+    networks:
+      proxy:
+      minecraft-network:
+        ipv4_address: 10.57.81.3
+    labels:
+      - lazymc.group=mc1
+      - lazymc.enabled=true
+      - lazymc.server.address=mc-server01:25565
+      - lazymc.public.version=1.20.1
+      - lazymc.server.forge=true
+      # https://minecraft.wiki/w/Protocol_version
+      - lazymc.public.protocol=763
+      - lazymc.port=25565
+      - lazymc.time.minimum_online_time=3600
+      - lazymc.time.sleep_after=3600
+      - lazymc.join.hold.timeout=30
+      - lazymc.server.directory=/data01
+      - traefik.enable=true
+      - traefik.docker.network=proxy
+      - traefik.tcp.routers.mc1-rcon.rule=HostSNI(`mc1.${DEFAULT_DOMAIN}`)
+      - traefik.tcp.routers.mc1-rcon.entrypoints=rcon
+      - traefik.tcp.services.mc1-rcon.loadbalancer.server.port=25575
+
+
+  mc-server02:
+    image: itzg/minecraft-server:java17-graalvm
+    container_name: mc-server02
+    environment:
+      TZ:
+      EULA: "TRUE" # Agree to the EULA
+      TYPE: AUTO_CURSEFORGE
+      CF_API_KEY:
+      CF_SLUG: "better-mc-forge-bmc4"
+      CF_FILE_ID: 6048060
+      INIT_MEMORY: 4G
+      MAX_MEMORY: 10G
+      MOTD: "Running %MODPACK_NAME% version %env:MODPACK_VERSION% Survival Mode"
+      DIFFICULTY: "normal"
+      MODE: "survival"
+      SERVER_NAME: "MC2 - BMC Survival"
+      ALLOW_FLIGHT: TRUE
+      ONLINE_MODE: FALSE
+      ENABLE_RCON: "true"
+      RCON_PASSWORD:
+      RCON_PORT: 25575
+      CREATE_CONSOLE_IN_PIPE: "true"  # Enable console piping
+      OPS: |
+        karubits
+    deploy:
+      resources:
+        limits:
+          cpus: "3"
+          memory: 12G
+        reservations:
+          cpus: "2"
+          memory: 10G
+    healthcheck:
+      test: mc-health
+      start_period: 1m
+      interval: 5s
+      retries: 20
+    volumes:
+      - ${PATH_DATA}/minecraft02:/data
+    # This container should be managed solely by the lazymc container
+    # so set restart to no, or else the container will start again...
+    restart: no
+    networks:
+      proxy:
+      minecraft-network:
+        ipv4_address: 10.57.81.4
+    labels:
+      - lazymc.group=mc2
+      - lazymc.enabled=true
+      - lazymc.server.address=mc-server02:25565
+      - lazymc.public.version=1.20.1
+      - lazymc.server.forge=true
+      # https://minecraft.wiki/w/Protocol_version
+      - lazymc.public.protocol=763
+      - lazymc.port=25566
+      - lazymc.server.directory=/data02
+      - lazymc.time.minimum_online_time=3600
+      - lazymc.time.sleep_after=3600
+      - traefik.enable=true
+      - traefik.docker.network=proxy
+      - traefik.tcp.routers.mc1-rcon.rule=HostSNI(`mc2.${DEFAULT_DOMAIN}`)
+      - traefik.tcp.routers.mc1-rcon.entrypoints=rcon
+      - traefik.tcp.services.mc1-rcon.loadbalancer.server.port=25575
+
+networks:
+  proxy:
+    external: true
+
+  minecraft-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.57.81.0/24

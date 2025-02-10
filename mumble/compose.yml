@@ -1,0 +1,27 @@
+---
+services:
+    mumble-server:
+      image: mumblevoip/mumble-server:latest
+      container_name: mumble-server
+      hostname: mumble-server
+      restart: on-failure
+      user: 1001:1001
+      environment:
+      - MUMBLE_SUPERUSER_PASSWORD=
+      - MUMBLE_CONFIG_SERVER_PASSWORD=
+      - MUMBLE_CONFIG_OPUSTHRESHOLD=0
+      - MUMBLE_CONFIG_MESSAGEBURST=1
+      - MUMBLE_CONFIG_MESSAGELIMIT=1
+      - MUMBLE_CONFIG_USERS=100
+      - MUMBLE_CONFIG_BANDWIDTH=512000
+      - MUMBLE_CONFIG_SSLCERT=/data/fullchain.pem
+      - MUMBLE_CONFIG_SSLKEY=/data/privkey.pem
+      - MUMBLE_UID=1001
+      - MUMBLE_GID=1001
+      volumes:
+        - ${PATH_DATA}/mumble:/data
+      ports:
+        - 64738:64738
+        - 64738:64738/udp
+        - 6502:6502
+

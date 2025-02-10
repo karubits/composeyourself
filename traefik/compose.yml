@@ -7,6 +7,8 @@ services:
     ports:
      - "80:80"
      - "443:443"
+     - "25575:25575"    # RCON (shared for all instances)
+     #- "8443:8443/udp"  # Mattermost Calls
     labels:
       # Homepage
       - "homepage.group=Tools"
@@ -33,8 +35,8 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ${PATH_CONFIG}/traefik:/etc/traefik
     environment:
-      - NAMECHEAP_API_KEY=${API_KEY_NAMECHEAP}
-      - NAMECHEAP_API_USER=${API_USER_NAMECHEAP}
+      - PORKBUN_SECRET_API_KEY
+      - PORKBUN_API_KEY
       - TZ=${TZ}
     networks:
       - proxy

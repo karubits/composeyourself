@@ -24,12 +24,12 @@ services:
       - FREE_ONLY=off
       - OPENVPN_PASSWORD=${OPENVPN_PASS}
       - OPENVPN_USER=${OPENVPN_USER}
+      - OPENVPN_ENDPOINT_PORT=5060
       - PGID=${PGID}
       - PUID=${PUID}
       - SERVER_COUNTRIES=${VPN_SERVERS_COUNTRY}
       - TZ=${TZ}
       - UPDATER_PERIOD=24h
-      - VPN_ENDPOINT_PORT=5060
       - VPN_PORT_FORWARDING_PROVIDER=${VPN_PROVIDER}
       - VPN_PORT_FORWARDING=on
       - VPN_SERVICE_PROVIDER=${VPN_PROVIDER}
@@ -103,6 +103,11 @@ services:
       - "traefik.http.routers.unpackerr.rule=Host(`unpackerr.${DEFAULT_DOMAIN}`)"
       - "traefik.http.routers.unpackerr.service=unpackerr"
       - "traefik.http.services.unpackerr.loadbalancer.server.port=5656"
+      # Pinchflat
+      - "traefik.http.routers.pinchflat.entrypoints=websecure"
+      - "traefik.http.routers.pinchflat.rule=Host(`pinchflat.${DEFAULT_DOMAIN}`)"
+      - "traefik.http.routers.pinchflat.service=pinchflat"
+      - "traefik.http.services.pinchflat.loadbalancer.server.port=8945"
 
   prowlarr:
     # 🔹🔹 PROWLARR  🔹🔹
@@ -276,32 +281,6 @@ services:
       - "homepage.widget.url=https://bazarr.${DEFAULT_DOMAIN}"
       - "homepage.widget.key=${API_KEY_BAZARR}"
 
-  # deluge:
-  #   image: lscr.io/linuxserver/deluge:latest
-  #   container_name: deluge
-  #   network_mode: "service:gluetun"
-  #   restart: unless-stopped
-  #   environment:
-  #     - PGID=${PGID}
-  #     - PUID=${PUID}
-  #     - TZ=${TZ}
-  #     - DELUGE_LOGLEVEL=error #optional
-  #   volumes:
-  #     - ${PATH_CONFIG}/deluge:/config
-  #     - ${PATH_DOWNLOAD}:/downloads
-  #   labels:
-  #     # Watchtower
-  #     - "com.centurylinklabs.watchtower.enable=true"
-  #     # Homepage
-  #     - "homepage.group=Downloads"
-  #     - "homepage.name=Deluge"
-  #     - "homepage.icon=deluge.png"
-  #     - "homepage.href=https://deluge.${DEFAULT_DOMAIN}"
-  #     - "homepage.weight=1"
-  #     - "homepage.widget.type=deluge"
-  #     - "homepage.widget.url=https://deluge.${DEFAULT_DOMAIN}"
-  #     - "homepage.widget.password=${PASS_DELUGE}"
-
   qbittorrent:
     image: lscr.io/linuxserver/qbittorrent:latest
     container_name: qbittorrent
@@ -446,6 +425,21 @@ services:
       - UN_WEBSERVER_SSL_KEY_FILE=
       - UN_WEBSERVER_URLBASE=/
       - UN_WEBSERVER_UPSTREAMS=
+    labels:
+      # Watchtower
+      - "com.centurylinklabs.watchtower.enable=true"
+
+  pinchflat:
+    # https://github.com/kieraneglin/pinchflat
+    container_name: pinchflat
+    restart: always
+    network_mode: "service:gluetun"
+    image: ghcr.io/kieraneglin/pinchflat:latest
+    environment:
+      - TZ=${TZ}
+    volumes:
+      - ${PATH_CONFIG}/pinchflat/config:/config
+      - ${PATH_MEDIA}/youtube:/downloads
     labels:
       # Watchtower
       - "com.centurylinklabs.watchtower.enable=true"
