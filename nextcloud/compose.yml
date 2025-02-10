@@ -11,8 +11,34 @@ services:
       - nextcloud_web:/var/www/html
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
-    env_file:
-      - .nextcloud-web.env
+    environment:
+      # Nextcloud
+      - NEXTCLOUD_ADMIN_USER
+      - NEXTCLOUD_ADMIN_PASSWORD
+      - NEXTCLOUD_DATA_DIR=/data
+      - NEXTCLOUD_TRUSTED_DOMAINS=hub.${DEFAULT_DOMAIN}
+      # PHP and Apache
+      - PHP_MEMORY_LIMIT=16G
+      - PHP_UPLOAD_LIMIT=16G
+      - APACHE_BODY_LIMIT=0
+      - TRUSTED_PROXIES
+      - OVERWRITEPROTOCOL=https
+      # MYSQL
+      - MYSQL_DATABASE=nextcloud
+      - MYSQL_USER=nextcloud
+      - MYSQL_PASSWORD
+      - MYSQL_HOST=nextcloud-db
+      # REDIS
+      - REDIS_HOST=nextcloud-cache
+      - REDIS_PORT=6379
+      - REDIS_HOST_PASSWORD
+      # SMTP Settings
+      - MAIL_FROM_ADDRESS=hub@${DEFAULT_DOMAIN}
+      - SMTP_HOST=${SMTP_SERVER}
+      - SMTP_NAME=${SMTP_USER}
+      - SMTP_PASSWORD=${SMTP_PASS}
+      - SMTP_PORT=587
+      - SMTP_SECURE=tls
     networks:
       - default
       - proxy
@@ -49,8 +75,6 @@ services:
       - "traefik.http.routers.nextcloud.middlewares=nextcloud-redirect,nextcloud-headers"
       - "traefik.http.routers.nextcloud.entrypoints=websecure"
       - "traefik.http.routers.nextcloud.rule=Host(`hub.${DEFAULT_DOMAIN}`)"
-      # Watchtower
-      - "com.centurylinklabs.watchtower.enable=true"
     depends_on:
       nextcloud-db:
           condition: service_healthy
@@ -71,9 +95,6 @@ services:
       - nextcloud-web
       - nextcloud-db
       - nextcloud-cache
-    labels:
-      # Watchtower
-      - "com.centurylinklabs.watchtower.enable=true"
 
   nextcloud-cache:
     container_name: nextcloud-cache
@@ -84,8 +105,9 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
-    env_file:
-      - .nextcloud-cache.env
+    environment:
+      - REDIS_PORT=6379
+      - REDIS_HOST_PASSWORD=${REDIS_HOST_PASSWORD}
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 5s
@@ -104,12 +126,15 @@ services:
       --character-set-server=utf8mb4
       --collation-server=utf8mb4_unicode_ci
     restart: always
+    environment:
+      - MYSQL_DATABASE=nextcloud
+      - MYSQL_USER=nextcloud
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
     volumes:
       - nextcloud_db:/var/lib/mysql
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
-    env_file:
-      - .nextcloud-db.env
     healthcheck:
       test: ["CMD", "mysql", "-u${MYSQL_USER}", "-p${MYSQL_PASSWORD}", "-e", "use ${MYSQL_DATABASE}"]
       interval: 10s

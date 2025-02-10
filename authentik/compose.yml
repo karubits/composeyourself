@@ -40,7 +40,7 @@ services:
     restart: unless-stopped
     command: server
     environment:
-      - AUTHENTIK_REDIS__HOST=redis
+      - AUTHENTIK_REDIS__HOST=authentik-redis
       - AUTHENTIK_POSTGRESQL__HOST=postgresql
       - AUTHENTIK_POSTGRESQL__USER=${PG_USER:-authentik}
       - AUTHENTIK_POSTGRESQL__NAME=${PG_DB:-authentik}
