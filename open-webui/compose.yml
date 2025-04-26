@@ -1,0 +1,155 @@
+---
+services:
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama
+    restart: always
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    environment:
+      - TZ
+    command: serve
+    healthcheck:
+      test: ollama --version || exit 1
+    volumes:
+      - /etc/ssl/certs/:/etc/ssl/certs/:ro
+      - ollama:/root/.ollama
+    networks:
+      llm:
+    ports:
+      - 11434:11434
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: postgres
+    restart: always
+    environment:
+      - POSTGRES_USER=openwebui
+      - POSTGRES_PASSWORD=${DB_PASS}
+      - POSTGRES_DB=openwebui
+      - TZ
+    volumes:
+      - llm_postgres-data:/var/lib/postgresql/data
+    networks:
+      - llm
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U openwebui"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+
+  open-webui:
+    image: ghcr.io/open-webui/open-webui:main
+    container_name: open-webui
+    restart: always
+    depends_on:
+      - ollama
+      - redis
+      - postgres
+    environment:
+      - ADMIN_EMAIL=${ADMIN_EMAIL}
+      - DEFAULT_MODELS="cyberuser42/DeepSeek-R1-Distill-Qwen-14B"
+      - DEFAULT_USER_ROLE=user
+      - ENABLE_ADMIN_CHAT_ACCESS=True
+      - ENABLE_ADMIN_EXPORT=True
+      - ENABLE_LOGIN_FORM=False
+      - ENABLE_OAUTH_SIGNUP=True
+      - ENABLE_OPENAI_API=True
+      - ENABLE_REALTIME_CHAT_SAVE=True
+      - ENABLE_WEBSOCKET_SUPPORT=True
+      - ENV=prod
+      - GLOBAL_LOG_LEVEL="DEBUG"
+      - NODE_OPTIONS=--max-old-space-size=4096
+      - OAUTH_PICTURE_CLAIM=photo
+      - OLLAMA_BASE_URL=http://ollama:11434
+      - OPENAI_API_KEY
+      - TZ
+      - UVICORN_WORKERS=4
+      - WEBSOCKET_MANAGER="redis"
+      - WEBUI_NAME="Mujin AI"
+      - WEBUI_SECRET_KEY
+      - WEBUI_URL=https://llm.mujin.co.jp
+      # Database configuration
+      - DATABASE_URL=postgresql://openwebui:${DB_PASS}@postgres:5432/openwebui
+      - DATABASE_POOL_SIZE=20
+      - DATABASE_POOL_MAX_OVERFLOW=10
+      - DATABASE_POOL_TIMEOUT=30
+      - DATABASE_POOL_RECYCLE=3600
+      # Redis configuration
+      - REDIS_URL=redis://redis-valkey:6379/0
+      - WEBSOCKET_REDIS_URL=redis://redis-valkey:6379/0
+    volumes:
+      - /etc/ssl/certs/:/etc/ssl/certs/:ro
+      - open-webui:/app/backend/data
+    #ports:
+    #  - 8080:8080
+    networks:
+      proxy:
+      llm:
+    labels:
+      - "traefik.docker.network=proxy"
+      - "traefik.enable=true"
+
+      # HTTP Router
+      - "traefik.http.routers.open-webui.rule=Host(`llm.${DOMAIN}`)"
+      - "traefik.http.routers.open-webui.entrypoints=websecure"
+      - "traefik.http.routers.open-webui.tls.certresolver=mujinpki"
+
+      - "traefik.http.routers.open-webui-ws.rule=PathPrefix(/ws/socket.io)"
+      - "traefik.http.routers.open-webui-ws.entrypoints=websecure"
+      - "traefik.http.routers.open-webui-ws.service=open-webui"
+
+      # HTTP Service
+      - "traefik.http.services.open-webui.loadbalancer.server.port=8080"
+
+
+  redis:
+    image: docker.io/valkey/valkey:8.0.1-alpine
+    container_name: redis-valkey
+    volumes:
+      - redis-data:/data
+    command: "valkey-server --save 30 1"
+    healthcheck:
+      test: "[ $$(valkey-cli ping) = 'PONG' ]"
+      start_period: 5s
+      interval: 1s
+      timeout: 3s
+      retries: 5
+    restart: unless-stopped
+    cap_drop:
+      - ALL
+    cap_add:
+      - SETGID
+      - SETUID
+      - DAC_OVERRIDE
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "1m"
+        max-file: "1"
+    networks:
+      - llm
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+
+
+networks:
+  proxy:
+    name: proxy
+    external: true
+  llm:
+    name: llm
+
+volumes:
+  ollama:
+  open-webui:
+  redis-data:
+  llm_postgres-data:
+    external: true
