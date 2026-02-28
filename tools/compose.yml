@@ -2,14 +2,17 @@
 ################################
 # 📦 TOOLS COMPOSE #
 ################################
-# Service URL:
-# 🔗 https://it-tools.tech/
-# ENV Examples:
-# 🔗 https://github.com/CorentinTh/it-tools
+# Multiple services: it-tools, stirling-pdf, speedtest, speedtest-tracker,
+# speedtest-tracker-db.
+# 🔗 See each service in file for further links.
 ################################
 
 services:
   it-tools:
+    # 🔹🔹 IT-TOOLS  🔹🔹
+    # Collection of dev and IT utilities (encoders, formatters, generators, etc.).
+    # 🔗 https://it-tools.tech/
+    # 🔗 https://github.com/CorentinTh/it-tools
     image: 'ghcr.io/corentinth/it-tools:latest'
     restart: unless-stopped
     container_name: it-tools
@@ -30,6 +33,10 @@ services:
       - proxy
 
   stirling-pdf:
+    # 🔹🔹 STIRLING-PDF  🔹🔹
+    # PDF toolkit in the browser: merge, split, convert, OCR, and more.
+    # 🔗 https://www.stirlingpdf.com/
+    # 🔗 https://github.com/Stirling-Tools/Stirling-PDF
     container_name: stirling-pdf
     restart: unless-stopped
     image: frooodle/s-pdf:latest
@@ -55,6 +62,10 @@ services:
       - proxy
 
   speedtest:
+    # 🔹🔹 OPENSPEEDTEST  🔹🔹
+    # Self-hosted internet speed test; no account or tracking.
+    # 🔗 https://openspeedtest.com/
+    # 🔗 https://github.com/openspeedtest/Speed-Test
     restart: unless-stopped
     container_name: openspeedtest
     image: openspeedtest/latest
@@ -77,6 +88,10 @@ services:
       - proxy
 
   speedtest-tracker:
+    # 🔹🔹 SPEEDTEST-TRACKER  🔹🔹
+    # Log and track speedtest results over time; charts and history.
+    # 🔗 https://github.com/alexjustesen/speedtest-tracker
+    # 🔗 https://speedtesttracker.io/
     image: 'ghcr.io/alexjustesen/speedtest-tracker:latest'
     container_name: speedtest-tracker
     restart: unless-stopped
@@ -116,6 +131,9 @@ services:
       - default
 
   speedtest-tracker-db:
+    # 🔹🔹 SPEEDTEST-TRACKER-DB  🔹🔹
+    # MariaDB backend for speedtest-tracker.
+    # 🔗 https://mariadb.org/
     container_name: speedtest-tracker-db
     image: mariadb:10
     restart: unless-stopped

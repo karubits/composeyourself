@@ -2,14 +2,17 @@
 ################################
 # 📦 DOWNLOAD-STACK COMPOSE #
 ################################
-# Service URL:
-# 🔗 https://github.com/qmcgaw/gluetun (primary component)
-# ENV Examples:
-# 🔗 https://github.com/qmcgaw/gluetun/blob/master/docs/configuration.md
+# Multiple services: gluetun (VPN), prowlarr, radarr, lidarr, sonarr,
+# readarr, bazarr, qbittorrent, jellyseerr, unpackerr, pinchflat, proxy.
+# Primary (gluetun):
 ################################
 
 services:
   gluetun:
+    # 🔹🔹 GLUETUN  🔹🔹
+    # VPN container; other services use its network for secure egress.
+    # 🔗 https://github.com/qmcgaw/gluetun
+    # 🔗 https://github.com/qmcgaw/gluetun/blob/master/docs/configuration.md
     image: qmcgaw/gluetun:latest
     container_name: gluetun
     restart: unless-stopped
@@ -120,7 +123,9 @@ services:
 
   prowlarr:
     # 🔹🔹 PROWLARR  🔹🔹
-    # With Prowlarr, the user gets Indexer Sync and seamless integration support with various PVR apps. In addition, with Prowlarr, the user can manage all Torrent trackers and Usenet Indexers from one place while providing support for automation with the search for and download content, irrespective of the content type.
+    # Indexer manager; syncs trackers and indexers to all *arr apps.
+    # 🔗 https://wiki.servarr.com/prowlarr
+    # 🔗 https://github.com/Prowlarr/Prowlarr
     image: lscr.io/linuxserver/prowlarr:latest
     container_name: prowlarr
     network_mode: "service:gluetun"
@@ -147,7 +152,9 @@ services:
 
   radarr:
     # 🔹🔹 RADARR  🔹🔹
-    # Radarr is similar to Sonarr but grabs movies instead of TV shows.
+    # Movie collection manager; automates grabbing and organizing.
+    # 🔗 https://wiki.servarr.com/radarr
+    # 🔗 https://github.com/Radarr/Radarr
     image: lscr.io/linuxserver/radarr:latest
     container_name: radarr
     network_mode: "service:gluetun"
@@ -176,7 +183,9 @@ services:
 
   lidarr:
     # 🔹🔹 LIDARR  🔹🔹
-    # Lidarr is a music collection manager for Usenet and BitTorrent users. It can monitor multiple RSS feeds for new albums from your favorite artists and will interface with clients and indexers to grab, sort, and rename them.
+    # Music collection manager for Usenet and BitTorrent.
+    # 🔗 https://wiki.servarr.com/lidarr
+    # 🔗 https://github.com/Lidarr/Lidarr
     image: lscr.io/linuxserver/lidarr:2.1.2-nightly
     container_name: lidarr
     network_mode: "service:gluetun"
@@ -205,7 +214,9 @@ services:
 
   sonarr:
     # 🔹🔹 SONARR  🔹🔹
-    # Sonarr is a PVR for Usenet and BitTorrent users. It can monitor multiple RSS feeds for new episodes of your favorite shows and will grab, sort and rename them.
+    # TV series PVR; monitors RSS and grabs new episodes.
+    # 🔗 https://wiki.servarr.com/sonarr
+    # 🔗 https://github.com/Sonarr/Sonarr
     image: lscr.io/linuxserver/sonarr:latest
     container_name: sonarr
     network_mode: "service:gluetun"
@@ -233,6 +244,10 @@ services:
       - "homepage.widget.key=${API_KEY_SONARR}"
 
   readarr:
+    # 🔹🔹 READARR  🔹🔹
+    # Book and audiobook collection manager.
+    # 🔗 https://wiki.servarr.com/readarr
+    # 🔗 https://github.com/Readarr/Readarr
     image: lscr.io/linuxserver/readarr:develop
     container_name: readarr
     network_mode: "service:gluetun"
@@ -261,7 +276,9 @@ services:
 
   bazarr:
     # 🔹🔹 BAZARR  🔹🔹
-    # Bazarr is a companion application to Sonarr and Radarr that manages and downloads subtitles based on your requirements.
+    # Subtitle manager for Sonarr/Radarr; fetches and manages subs.
+    # 🔗 https://wiki.servarr.com/bazarr
+    # 🔗 https://github.com/morpheus65535/bazarr
     image: lscr.io/linuxserver/bazarr:latest
     container_name: bazarr
     network_mode: "service:gluetun"
@@ -291,6 +308,10 @@ services:
       - "homepage.widget.key=${API_KEY_BAZARR}"
 
   qbittorrent:
+    # 🔹🔹 QBITTORRENT  🔹🔹
+    # BitTorrent client with Web UI; used by *arr apps for downloads.
+    # 🔗 https://www.qbittorrent.org/
+    # 🔗 https://github.com/qbittorrent/qBittorrent
     image: lscr.io/linuxserver/qbittorrent:latest
     container_name: qbittorrent
     network_mode: "service:gluetun"
@@ -318,7 +339,10 @@ services:
       - "homepage.widget.password=${PASS_QBT}"
 
   jellyseerr:
-    # 🔹🔹 JELLYSEERR 🔹🔹
+    # 🔹🔹 JELLYSEERR  🔹🔹
+    # Request management for Jellyfin/Emby; request movies and TV from users.
+    # 🔗 https://github.com/Fallenbagel/jellyseerr
+    # 🔗 https://jellyseerr.dev/
     image: fallenbagel/jellyseerr:latest
     container_name: jellyseerr
     network_mode: "service:gluetun"
@@ -344,6 +368,10 @@ services:
       - "homepage.widget.key=${API_KEY_JELLYSEERR}"
 
   unpackerr:
+    # 🔹🔹 UNPACKERR  🔹🔹
+    # Unpacks archives after *arr imports; integrates with Sonarr/Radarr/Lidarr/Readarr.
+    # 🔗 https://github.com/davidnewhall/unpackerr
+    # 🔗 https://golift.io/unpackerr
     image: golift/unpackerr:latest
     container_name: unpackerr
     network_mode: "service:gluetun"
@@ -439,7 +467,10 @@ services:
       - "com.centurylinklabs.watchtower.enable=true"
 
   pinchflat:
-    # https://github.com/kieraneglin/pinchflat
+    # 🔹🔹 PINCHFLAT  🔹🔹
+    # YouTube downloader and channel archiver.
+    # 🔗 https://github.com/kieraneglin/pinchflat
+    # 🔗 https://pinchflat.org/
     container_name: pinchflat
     restart: always
     network_mode: "service:gluetun"

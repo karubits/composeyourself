@@ -2,16 +2,18 @@
 ################################
 # 📦 AUTHENTIK COMPOSE #
 ################################
-# Service URL:
+# SSO and identity provider; postgresql, server, worker, geoipupdate.
 # 🔗 https://goauthentik.io/
-# ENV Examples:
 # 🔗 https://docs.goauthentik.io/install-config/configuration/
 ################################
 
 services:
   postgresql:
+    # 🔹🔹 POSTGRESQL  🔹🔹
+    # Database for authentik (server + worker).
+    # 🔗 https://hub.docker.com/_/postgres
     env_file:
-    - .env
+      - .env
     environment:
       POSTGRES_DB: ${PG_DB:-authentik}
       POSTGRES_PASSWORD: ${PG_PASS:?database password required}
@@ -21,55 +23,95 @@ services:
       retries: 5
       start_period: 20s
       test:
-      - CMD-SHELL
-      - pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}
+        - CMD-SHELL
+        - pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}
       timeout: 5s
     image: docker.io/library/postgres:16-alpine
     restart: unless-stopped
     volumes:
-    - database:/var/lib/postgresql/data
+      - ${PATH_DATA}/authentik/db:/var/lib/postgresql/data
+
   server:
+    # 🔹🔹 AUTHENTIK SERVER  🔹🔹
+    # Main authentik web app and API.
+    # 🔗 https://goauthentik.io/
     command: server
     depends_on:
       postgresql:
         condition: service_healthy
     env_file:
-    - .env
+      - .env
     environment:
       AUTHENTIK_POSTGRESQL__HOST: postgresql
       AUTHENTIK_POSTGRESQL__NAME: ${PG_DB:-authentik}
       AUTHENTIK_POSTGRESQL__PASSWORD: ${PG_PASS}
       AUTHENTIK_POSTGRESQL__USER: ${PG_USER:-authentik}
       AUTHENTIK_SECRET_KEY: ${AUTHENTIK_SECRET_KEY:?secret key required}
-    image: ${AUTHENTIK_IMAGE:-ghcr.io/goauthentik/server}:${AUTHENTIK_TAG:-2025.10.2}
-    ports:
-    - ${COMPOSE_PORT_HTTP:-9000}:9000
-    - ${COMPOSE_PORT_HTTPS:-9443}:9443
+    image: ${AUTHENTIK_IMAGE:-ghcr.io/goauthentik/server}:${AUTHENTIK_TAG:-2026.2.0}
+    # ports:
+    #   - ${COMPOSE_PORT_HTTP:-9000}:9000
+    #   - ${COMPOSE_PORT_HTTPS:-9443}:9443
     restart: unless-stopped
     volumes:
-    - ./media:/media
-    - ./custom-templates:/templates
+      - ${PATH_DATA}/authentik/media:/media
+      - ${PATH_DATA}/authentik/templates:/templates
+      - ${PATH_DATA}/authentik/geoip:/geoip
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+      - "traefik.docker.network=proxy"
+      - "traefik.enable=true"
+      - "traefik.http.routers.sso.entrypoints=websecure"
+      - "traefik.http.routers.sso.service=sso"
+      - "traefik.http.services.sso.loadbalancer.server.port=9000"
+      - "traefik.http.routers.sso.rule=Host(`sso.${DEFAULT_DOMAIN}`) && (PathPrefix(`/`) || PathPrefix(`/outpost.goauthentik.io/`))"
+      - "traefik.http.middlewares.authentik-headers.headers.customrequestheaders.X-Forwarded-Proto=https"
+      - "traefik.http.middlewares.authentik-headers.headers.customrequestheaders.X-Forwarded-Host=sso.${DEFAULT_DOMAIN}"
+      - "traefik.http.routers.sso.middlewares=authentik-headers"
+    networks:
+      - default
+      - proxy
+
   worker:
+    # 🔹🔹 AUTHENTIK WORKER  🔹🔹
+    # Background tasks and outpost coordination.
+    # 🔗 https://goauthentik.io/
     command: worker
     depends_on:
       postgresql:
         condition: service_healthy
     env_file:
-    - .env
+      - .env
     environment:
       AUTHENTIK_POSTGRESQL__HOST: postgresql
       AUTHENTIK_POSTGRESQL__NAME: ${PG_DB:-authentik}
       AUTHENTIK_POSTGRESQL__PASSWORD: ${PG_PASS}
       AUTHENTIK_POSTGRESQL__USER: ${PG_USER:-authentik}
       AUTHENTIK_SECRET_KEY: ${AUTHENTIK_SECRET_KEY:?secret key required}
-    image: ${AUTHENTIK_IMAGE:-ghcr.io/goauthentik/server}:${AUTHENTIK_TAG:-2025.10.2}
+    image: ${AUTHENTIK_IMAGE:-ghcr.io/goauthentik/server}:${AUTHENTIK_TAG:-2026.2.0}
     restart: unless-stopped
     user: root
     volumes:
-    - /var/run/docker.sock:/var/run/docker.sock
-    - ./media:/media
-    - ./certs:/certs
-    - ./custom-templates:/templates
-volumes:
-  database:
-    driver: local
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ${PATH_DATA}/authentik/media:/media
+      - ${PATH_DATA}/authentik/certs:/certs
+      - ${PATH_DATA}/authentik/templates:/templates
+      - ${PATH_DATA}/authentik/geoip:/geoip
+
+  geoipupdate:
+    # 🔹🔹 GEOIPUPDATE  🔹🔹
+    # Updates MaxMind GeoIP DBs for authentik (GeoLite2-City, GeoLite2-ASN).
+    # 🔗 https://github.com/maxmind/geoipupdate
+    image: maxmindinc/geoipupdate:latest
+    volumes:
+      - ${PATH_DATA}/authentik/geoip:/usr/share/GeoIP
+    environment:
+      GEOIPUPDATE_EDITION_IDS: GeoLite2-City GeoLite2-ASN
+      GEOIPUPDATE_FREQUENCY: 8
+      GEOIPUPDATE_ACCOUNT_ID: ${GEOIPUPDATE_ACCOUNT_ID}
+      GEOIPUPDATE_LICENSE_KEY: ${GEOIPUPDATE_LICENSE_KEY}
+
+networks:
+  default:
+    driver: bridge
+  proxy:
+    external: true
