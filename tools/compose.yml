@@ -1,5 +1,13 @@
----
-version: '3.8'
+
+################################
+# 📦 TOOLS COMPOSE #
+################################
+# Service URL:
+# 🔗 https://it-tools.tech/
+# ENV Examples:
+# 🔗 https://github.com/CorentinTh/it-tools
+################################
+
 services:
   it-tools:
     image: 'ghcr.io/corentinth/it-tools:latest'

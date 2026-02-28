@@ -1,4 +1,13 @@
----
+
+################################
+# 📦 UPTIME-KUMA COMPOSE #
+################################
+# Service URL:
+# 🔗 https://uptime.kuma.pet/
+# ENV Examples:
+# 🔗 https://github.com/louislam/uptime-kuma/wiki/Environment-Variables
+################################
+
 services:
   uptime-kuma:
     image: louislam/uptime-kuma:1

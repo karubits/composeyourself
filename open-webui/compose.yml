@@ -1,4 +1,13 @@
----
+
+################################
+# 📦 OPEN-WEBUI COMPOSE #
+################################
+# Service URL:
+# 🔗 https://openwebui.com/
+# ENV Examples:
+# 🔗 https://github.com/open-webui/open-webui
+################################
+
 services:
   ollama:
     image: ollama/ollama:latest

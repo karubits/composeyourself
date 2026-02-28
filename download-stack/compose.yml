@@ -1,4 +1,13 @@
----
+
+################################
+# 📦 DOWNLOAD-STACK COMPOSE #
+################################
+# Service URL:
+# 🔗 https://github.com/qmcgaw/gluetun (primary component)
+# ENV Examples:
+# 🔗 https://github.com/qmcgaw/gluetun/blob/master/docs/configuration.md
+################################
+
 services:
   gluetun:
     image: qmcgaw/gluetun:latest

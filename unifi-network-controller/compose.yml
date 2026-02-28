@@ -1,4 +1,13 @@
----
+
+################################
+# 📦 UNIFI-NETWORK-CONTROLLER COMPOSE #
+################################
+# Service URL:
+# 🔗 https://unifi.ui.com/
+# ENV Examples:
+# 🔗 https://docs.linuxserver.io/images/docker-unifi-network-application
+################################
+
 services:
   unifi-network-application:
     image: lscr.io/linuxserver/unifi-network-application:latest

@@ -1,4 +1,13 @@
----
+
+################################
+# 📦 MUMBLE COMPOSE #
+################################
+# Service URL:
+# 🔗 https://www.mumble.info/
+# ENV Examples:
+# 🔗 https://github.com/mumble-voip/mumble
+################################
+
 services:
     mumble-server:
       image: mumblevoip/mumble-server:latest

@@ -1,104 +1,75 @@
----
-# authentik 
-# https://docs.goauthentik.io/docs/install-config/install/docker-compose
+
+################################
+# 📦 AUTHENTIK COMPOSE #
+################################
+# Service URL:
+# 🔗 https://goauthentik.io/
+# ENV Examples:
+# 🔗 https://docs.goauthentik.io/install-config/configuration/
+################################
 
 services:
   postgresql:
-    container_name: authentik-db
+    env_file:
+    - .env
+    environment:
+      POSTGRES_DB: ${PG_DB:-authentik}
+      POSTGRES_PASSWORD: ${PG_PASS:?database password required}
+      POSTGRES_USER: ${PG_USER:-authentik}
+    healthcheck:
+      interval: 30s
+      retries: 5
+      start_period: 20s
+      test:
+      - CMD-SHELL
+      - pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}
+      timeout: 5s
     image: docker.io/library/postgres:16-alpine
     restart: unless-stopped
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}"]
-      start_period: 20s
-      interval: 30s
-      retries: 5
-      timeout: 5s
     volumes:
-      - ${PATH_DATA}/authentik/db:/var/lib/postgresql/data
-    environment:
-      - POSTGRES_PASSWORD=${PG_PASS:?database password required}
-      - POSTGRES_USER=${PG_USER:-authentik}
-      - POSTGRES_DB=${PG_DB:-authentik}
-    env_file:
-      - .env
-  redis:
-    container_name: authentik-redis
-    image: docker.io/library/redis:alpine
-    command: --save 60 1 --loglevel warning
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD-SHELL", "redis-cli ping | grep PONG"]
-      start_period: 20s
-      interval: 30s
-      retries: 5
-      timeout: 3s
-    volumes:
-      - redis:/data
+    - database:/var/lib/postgresql/data
   server:
-    container_name: authentik-server
-    image: ${AUTHENTIK_IMAGE:-ghcr.io/goauthentik/server}:${AUTHENTIK_TAG:-2024.12.3}
-    restart: unless-stopped
     command: server
-    environment:
-      - AUTHENTIK_REDIS__HOST=authentik-redis
-      - AUTHENTIK_POSTGRESQL__HOST=postgresql
-      - AUTHENTIK_POSTGRESQL__USER=${PG_USER:-authentik}
-      - AUTHENTIK_POSTGRESQL__NAME=${PG_DB:-authentik}
-      - AUTHENTIK_POSTGRESQL__PASSWORD=${PG_PASS}
-      - AUTHENTIK_DISABLE_STARTUP_ANALYTICS=true
-      - AUTHENTIK_DISABLE_UPDATE_CHECK=false
-      - AUTHENTIK_ERROR_REPORTING__ENABLED=false
-    volumes:
-      - ${PATH_DATA}/authentik/media:/media
-      - ${PATH_DATA}/authentik/templates:/templates
-    env_file:
-      - .env
-    ports:
-      - "${COMPOSE_PORT_HTTP:-9000}:9000"
-      - "${COMPOSE_PORT_HTTPS:-9443}:9443"
     depends_on:
       postgresql:
         condition: service_healthy
-      redis:
-        condition: service_healthy
-    labels:
-      - "traefik.docker.network=proxy"
-      - "traefik.enable=true"
-      - "traefik.http.routers.authentik.entrypoints=websecure"
-      - "traefik.http.routers.authentik.rule=Host(`sso.${DEFAULT_DOMAIN}`)"
-      - "traefik.http.routers.authentik.service=authentik"
-      - "traefik.http.services.authentik.loadbalancer.server.port=9000"
-  worker:
-    container_name: authentik-worker
-    image: ${AUTHENTIK_IMAGE:-ghcr.io/goauthentik/server}:${AUTHENTIK_TAG:-2024.12.3}
-    restart: unless-stopped
-    command: worker
+    env_file:
+    - .env
     environment:
-      - AUTHENTIK_REDIS__HOST=redis
-      - AUTHENTIK_POSTGRESQL__HOST=postgresql
-      - AUTHENTIK_POSTGRESQL__USER=${PG_USER:-authentik}
-      - AUTHENTIK_POSTGRESQL__NAME=${PG_DB:-authentik}
-      - AUTHENTIK_POSTGRESQL__PASSWORD=${PG_PASS}
-    # `user: root` and the docker socket volume are optional.
-    # See more for the docker socket integration here:
-    # https://goauthentik.io/docs/outposts/integrations/docker
-    # Removing `user: root` also prevents the worker from fixing the permissions
-    # on the mounted folders, so when removing this make sure the folders have the correct UID/GID
-    # (1000:1000 by default)
+      AUTHENTIK_POSTGRESQL__HOST: postgresql
+      AUTHENTIK_POSTGRESQL__NAME: ${PG_DB:-authentik}
+      AUTHENTIK_POSTGRESQL__PASSWORD: ${PG_PASS}
+      AUTHENTIK_POSTGRESQL__USER: ${PG_USER:-authentik}
+      AUTHENTIK_SECRET_KEY: ${AUTHENTIK_SECRET_KEY:?secret key required}
+    image: ${AUTHENTIK_IMAGE:-ghcr.io/goauthentik/server}:${AUTHENTIK_TAG:-2025.10.2}
+    ports:
+    - ${COMPOSE_PORT_HTTP:-9000}:9000
+    - ${COMPOSE_PORT_HTTPS:-9443}:9443
+    restart: unless-stopped
+    volumes:
+    - ./media:/media
+    - ./custom-templates:/templates
+  worker:
+    command: worker
+    depends_on:
+      postgresql:
+        condition: service_healthy
+    env_file:
+    - .env
+    environment:
+      AUTHENTIK_POSTGRESQL__HOST: postgresql
+      AUTHENTIK_POSTGRESQL__NAME: ${PG_DB:-authentik}
+      AUTHENTIK_POSTGRESQL__PASSWORD: ${PG_PASS}
+      AUTHENTIK_POSTGRESQL__USER: ${PG_USER:-authentik}
+      AUTHENTIK_SECRET_KEY: ${AUTHENTIK_SECRET_KEY:?secret key required}
+    image: ${AUTHENTIK_IMAGE:-ghcr.io/goauthentik/server}:${AUTHENTIK_TAG:-2025.10.2}
+    restart: unless-stopped
     user: root
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - ${PATH_DATA}/authentik/media:/media
-      - ${PATH_DATA}/authentik/certs:/certs
-      - ${PATH_DATA}/authentik/templates:/templates
-    env_file:
-      - .env
-    depends_on:
-      postgresql:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-
+    - /var/run/docker.sock:/var/run/docker.sock
+    - ./media:/media
+    - ./certs:/certs
+    - ./custom-templates:/templates
 volumes:
-  redis:
+  database:
     driver: local

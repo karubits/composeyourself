@@ -1,4 +1,13 @@
----
+
+################################
+# 📦 DNS-STACK COMPOSE #
+################################
+# Service URL:
+# 🔗 https://www.powerdns.com/ (PowerDNS)
+# ENV Examples:
+# 🔗 https://doc.powerdns.com/authoritative/
+################################
+
 services:
   pdns_auth_local:
     image: powerdns/pdns-auth-48:latest

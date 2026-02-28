@@ -1,4 +1,13 @@
----
+
+################################
+# 📦 MATTERMOST COMPOSE #
+################################
+# Service URL:
+# 🔗 https://mattermost.com/
+# ENV Examples:
+# 🔗 https://docs.mattermost.com/configure/configuring-mattermost-server.html
+################################
+
 services:
   postgres:
     container_name: mattermost_db

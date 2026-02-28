@@ -1,4 +1,13 @@
----
+
+################################
+# 📦 ZITADEL COMPOSE #
+################################
+# Service URL:
+# 🔗 https://zitadel.com/
+# ENV Examples:
+# 🔗 https://zitadel.com/docs/self-hosting/manage/configure
+################################
+
 services:
   zitadel:
     restart: "always"

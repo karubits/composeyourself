@@ -1,4 +1,13 @@
----
+
+################################
+# 📦 DOCKGE COMPOSE #
+################################
+# Service URL:
+# 🔗 https://dockge.kuma.pet/
+# ENV Examples:
+# 🔗 https://github.com/louislam/dockge
+################################
+
 services:
   dockge:
     container_name: dockge

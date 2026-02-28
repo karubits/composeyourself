@@ -1,4 +1,13 @@
----
+
+################################
+# 📦 BOOKSTACK COMPOSE #
+################################
+# Service URL:
+# 🔗 https://www.bookstackapp.com/
+# ENV Examples:
+# 🔗 https://github.com/BookStackApp/BookStack
+################################
+
 services:
   bookstack:
     image: lscr.io/linuxserver/bookstack

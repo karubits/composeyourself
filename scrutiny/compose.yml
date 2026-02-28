@@ -1,5 +1,12 @@
----
-version: "3.8"
+
+################################
+# 📦 SCRUTINY COMPOSE #
+################################
+# Service URL:
+# 🔗 https://github.com/AnalogJ/scrutiny
+# ENV Examples:
+# 🔗 https://github.com/AnalogJ/scrutiny/blob/master/docker-compose.yml
+################################
 
 networks:
   monitoring: # A common network for all monitoring services to communicate into

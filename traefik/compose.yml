@@ -1,14 +1,21 @@
----
+
+################################
+# 📦 TRAEFIK COMPOSE #
+################################
+# Service URL:
+# 🔗 https://traefik.io/
+# ENV Examples:
+# 🔗 https://doc.traefik.io/traefik/reference/static-configuration/env/
+################################
+
 services:
   traefik:
     container_name: traefik
-    image: "traefik:3.1"
+    image: "traefik:3.6"
     restart: always
     ports:
-      - "80:80"
-      - "443:443"
-      - "25575:25575"    # RCON (shared for all instances)
-      #- "8443:8443/udp"  # Mattermost Calls
+     - "80:80"
+     - "443:443"
     labels:
       # Homepage
       - "homepage.group=Tools"
@@ -28,64 +35,23 @@ services:
       - "traefik.http.routers.dashboard.rule=Host(`traefik.${DEFAULT_DOMAIN}`)"
       - "traefik.http.routers.dashboard.service=api@internal"
       - "traefik.http.routers.dashboard.tls.certresolver=le"
-      # Authentik Forward Auth
-      - "traefik.http.middlewares.authentik.forwardauth.address=http://authentik-server:9000/outpost.goauthentik.io/auth/traefik"
+      - "traefik.http.routers.dashboard.tls.domains[0].main=${DEFAULT_DOMAIN}"
+      - "traefik.http.routers.dashboard.tls.domains[0].sans=*.${DEFAULT_DOMAIN}"
+      # SSO ProxyForward
+      - "traefik.http.middlewares.authentik.forwardauth.address=http://authentik-server-1:9000/outpost.goauthentik.io/auth/traefik"
       - "traefik.http.middlewares.authentik.forwardauth.trustForwardHeader=true"
-      - "traefik.http.middlewares.authentik.forwardauth.authResponseHeaders=X-authentik-username,X-authentik-groups,X-authentik-entitlements,X-authentik-email,X-authentik-name,X-authentik-uid,X-authentik-jwt,X-authentik-meta-jwks,X-authentik-meta-outpost,X-authentik-meta-provider,X-authentik-meta-app,X-authentik-meta-version"
+      - "traefik.http.middlewares.authentik.forwardauth.authResponseHeaders=X-authentik-username,X-authentik-email,X-authentik-groups"
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ${PATH_CONFIG}/traefik:/etc/traefik
+      - ${PATH_DATA}/traefik:/etc/traefik
     environment:
-      # Global
-      - TRAEFIK_GLOBAL_CHECKNEWVERSION=true
-      - TRAEFIK_GLOBAL_SENDANONYMOUSUSAGE=false
-      
-      # API & Dashboard
-      - TRAEFIK_API=true
-      - TRAEFIK_API_DASHBOARD=true
-      - TRAEFIK_API_INSECURE=false
-      
-      # Log
-      - TRAEFIK_LOG_LEVEL=DEBUG
-      
-      # Entry Points
-      - TRAEFIK_ENTRYPOINTS_web_ADDRESS=:80
-      - TRAEFIK_ENTRYPOINTS_web_HTTP_REDIRECTIONS_ENTRYPOINT_TO=websecure
-      - TRAEFIK_ENTRYPOINTS_web_HTTP_REDIRECTIONS_ENTRYPOINT_SCHEME=https
-      
-      - TRAEFIK_ENTRYPOINTS_websecure_ADDRESS=:443
-      - TRAEFIK_ENTRYPOINTS_websecure_HTTP_TLS_CERTRESOLVER=le
-      - TRAEFIK_ENTRYPOINTS_websecure_HTTP_TLS_DOMAINS_0_MAIN=${DEFAULT_DOMAIN}
-      - TRAEFIK_ENTRYPOINTS_websecure_HTTP_TLS_DOMAINS_0_SANS=*.${DEFAULT_DOMAIN}
-      
-      # Providers
-      - TRAEFIK_PROVIDERS_DOCKER=true
-      - TRAEFIK_PROVIDERS_DOCKER_ENDPOINT=unix:///var/run/docker.sock
-      - TRAEFIK_PROVIDERS_DOCKER_WATCH=true
-      - TRAEFIK_PROVIDERS_DOCKER_EXPOSEDBYDEFAULT=false
-      - TRAEFIK_PROVIDERS_DOCKER_NETWORK=proxy
-      
-      # Server Transport
-      - TRAEFIK_SERVERSTRANSPORT_INSECURESKIPVERIFY=true
-      
-      # Certificate Resolver
-      - TRAEFIK_CERTIFICATESRESOLVERS_le_ACME_EMAIL=${ACME_EMAIL}
-      - TRAEFIK_CERTIFICATESRESOLVERS_le_ACME_STORAGE=/etc/traefik/acme.json
-      - TRAEFIK_CERTIFICATESRESOLVERS_le_ACME_DNSCHALLENGE=true
-      - TRAEFIK_CERTIFICATESRESOLVERS_le_ACME_DNSCHALLENGE_PROVIDER=porkbun
-      - TRAEFIK_CERTIFICATESRESOLVERS_le_ACME_DNSCHALLENGE_DELAYBEFORECHECK=0
-      - TRAEFIK_CERTIFICATESRESOLVERS_le_ACME_DNSCHALLENGE_RESOLVERS=1.1.1.1,9.9.9.9
-      - TRAEFIK_CERTIFICATESRESOLVERS_le_ACME_KEYTYPE=EC256
-      
-      # API Keys
       - PORKBUN_SECRET_API_KEY
       - PORKBUN_API_KEY
-      - TZ
+      - TZ=${TZ}
     networks:
       - proxy
 
 networks:
   proxy:
     name: proxy
-    external: true

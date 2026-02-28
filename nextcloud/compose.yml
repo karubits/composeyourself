@@ -1,4 +1,13 @@
----
+
+################################
+# 📦 NEXTCLOUD COMPOSE #
+################################
+# Service URL:
+# 🔗 https://nextcloud.com/
+# ENV Examples:
+# 🔗 https://docs.nextcloud.com/server/stable/admin_manual/installation/docker/
+################################
+
 name: nextcloud
 services:
   nextcloud-web:

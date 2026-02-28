@@ -1,3 +1,13 @@
+
+################################
+# 📦 BESZEL-HUB COMPOSE #
+################################
+# Service URL:
+# 🔗 https://github.com/henrygd/beszel
+# ENV Examples:
+# 🔗 https://github.com/henrygd/beszel
+################################
+
 services:
   beszel:
     image: henrygd/beszel

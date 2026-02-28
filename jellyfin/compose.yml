@@ -1,4 +1,13 @@
----
+
+################################
+# 📦 JELLYFIN COMPOSE #
+################################
+# Service URL:
+# 🔗 https://jellyfin.org/
+# ENV Examples:
+# 🔗 https://jellyfin.org/docs/general/administration/configuration/
+################################
+
 services:
   jellyfin:
     image: lscr.io/linuxserver/jellyfin:latest

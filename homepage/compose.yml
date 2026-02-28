@@ -1,4 +1,13 @@
----
+
+################################
+# 📦 HOMEPAGE COMPOSE #
+################################
+# Service URL:
+# 🔗 https://gethomepage.dev/
+# ENV Examples:
+# 🔗 https://gethomepage.dev/latest/configs/
+################################
+
 services:
   homepage:
     image: ghcr.io/gethomepage/homepage:latest

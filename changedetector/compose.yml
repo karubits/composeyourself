@@ -1,4 +1,13 @@
----
+
+################################
+# 📦 CHANGEDETECTOR COMPOSE #
+################################
+# Service URL:
+# 🔗 https://changedetection.io/
+# ENV Examples:
+# 🔗 https://github.com/dgtlmoon/changedetection.io
+################################
+
 services:
   changedetection:
     image: lscr.io/linuxserver/changedetection.io:latest

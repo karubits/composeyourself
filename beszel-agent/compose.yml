@@ -1,3 +1,13 @@
+
+################################
+# 📦 BESZEL-AGENT COMPOSE #
+################################
+# Service URL:
+# 🔗 https://github.com/henrygd/beszel-agent
+# ENV Examples:
+# 🔗 https://github.com/henrygd/beszel-agent
+################################
+
 services:
   beszel-agent:
     image: henrygd/beszel-agent

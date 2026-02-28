@@ -1,4 +1,13 @@
----
+
+################################
+# 📦 PTERODACTYL-WINGS COMPOSE #
+################################
+# Service URL:
+# 🔗 https://pterodactyl.io/
+# ENV Examples:
+# 🔗 https://pterodactyl.io/wings/1.0/configuration.html
+################################
+
 name: pterodactyl-wings1
 
 services:

@@ -1,6 +1,13 @@
----
-# Open source personal CRM.
-# https://www.monicahq.com/
+
+################################
+# 📦 MONICA COMPOSE #
+################################
+# Service URL:
+# 🔗 https://www.monicahq.com/
+# ENV Examples:
+# 🔗 https://github.com/monicahq/monica
+################################
+
 services:
 
   monica-app:

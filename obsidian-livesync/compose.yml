@@ -1,4 +1,13 @@
----
+
+################################
+# 📦 OBSIDIAN-LIVESYNC COMPOSE #
+################################
+# Service URL:
+# 🔗 https://github.com/vrtmrz/obsidian-livesync
+# ENV Examples:
+# 🔗 https://github.com/vrtmrz/obsidian-livesync
+################################
+
 services:
   obsidian-livesync:
     image: couchdb:3.3

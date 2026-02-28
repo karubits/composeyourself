@@ -1,4 +1,13 @@
----
+
+################################
+# 📦 ACTUAL-BUDGET COMPOSE #
+################################
+# Service URL:
+# 🔗 https://actualbudget.com/
+# ENV Examples:
+# 🔗 https://github.com/actualbudget/actual
+################################
+
 services:
   actual_server:
     container_name: actual_budget

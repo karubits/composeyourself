@@ -1,4 +1,13 @@
----
+
+################################
+# 📦 WATCHTOWER COMPOSE #
+################################
+# Service URL:
+# 🔗 https://containrrr.dev/watchtower/
+# ENV Examples:
+# 🔗 https://containrrr.dev/watchtower/arguments/
+################################
+
 services:
   watchtower:
     container_name: watchtower

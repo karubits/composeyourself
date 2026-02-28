@@ -1,10 +1,12 @@
-#
-# WARNING: Make sure to use the docker-compose.yml of the current release:
-#
-# https://github.com/immich-app/immich/releases/latest/download/docker-compose.yml
-#
-# The compose file on main may not be compatible with the latest release.
-#
+
+################################
+# 📦 IMMICH COMPOSE #
+################################
+# Service URL:
+# 🔗 https://immich.app/
+# ENV Examples:
+# 🔗 https://immich.app/docs/install/environment-variables/
+################################
 
 # Karubits notes: I tried to keep this as vanilla as possible. The only changes made are:
 # - Added labels for traefik

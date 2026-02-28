@@ -1,4 +1,13 @@
----
+
+################################
+# 📦 CODE-SERVER COMPOSE #
+################################
+# Service URL:
+# 🔗 https://coder.com/
+# ENV Examples:
+# 🔗 https://coder.com/docs/code-server
+################################
+
 services:
   code-server:
     image: lscr.io/linuxserver/code-server:latest

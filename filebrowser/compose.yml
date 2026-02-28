@@ -1,4 +1,13 @@
----
+
+################################
+# 📦 FILEBROWSER COMPOSE #
+################################
+# Service URL:
+# 🔗 https://filebrowser.org/
+# ENV Examples:
+# 🔗 https://filebrowser.org/configuration
+################################
+
 services:
   filebrowser:
     user: "${PUID}:${PGID}"

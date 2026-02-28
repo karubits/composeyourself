@@ -1,4 +1,13 @@
----
+
+################################
+# 📦 INVOICE-NINJA COMPOSE #
+################################
+# Service URL:
+# 🔗 https://invoiceninja.com/
+# ENV Examples:
+# 🔗 https://github.com/invoiceninja/invoiceninja
+################################
+
 services:
   web:
     container_name: ninja-web

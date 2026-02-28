@@ -1,4 +1,13 @@
----
+
+################################
+# 📦 DOCMOST COMPOSE #
+################################
+# Service URL:
+# 🔗 https://docmost.com/
+# ENV Examples:
+# 🔗 https://github.com/docmost/docmost
+################################
+
 services:
   docmost:
     image: docmost/docmost:latest

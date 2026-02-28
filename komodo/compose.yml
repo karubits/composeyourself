@@ -1,0 +1,109 @@
+
+################################
+# 🦎 KOMODO COMPOSE - MONGO 🦎 #
+################################
+# Service URL:
+# 🔗 https://komo.do/
+# ENV Examples:
+# 🔗 https://github.com/moghtech/komodo/blob/main/compose/compose.env
+################################
+
+services:
+  mongo:
+    image: mongo
+    labels:
+      komodo.skip: # Prevent Komodo from stopping with StopAllContainers
+    command: --quiet --wiredTigerCacheSizeGB 0.25
+    restart: unless-stopped
+    # ports:
+    #   - 27017:27017
+    volumes:
+      - ${PATH_DATA}/komodo/mongo-db:/data/db
+      - ${PATH_DATA}/komodo/mongo-data:/configdb
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${KOMODO_DB_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${KOMODO_DB_PASSWORD}
+
+
+  core:
+    image: ghcr.io/moghtech/komodo-core:${COMPOSE_KOMODO_IMAGE_TAG:-latest}
+    restart: unless-stopped
+    depends_on:
+      - mongo
+    ports:
+      - 9120:9120
+    env_file: .env
+    environment:
+      KOMODO_DATABASE_ADDRESS: mongo:27017
+      KOMODO_DATABASE_USERNAME: ${KOMODO_DB_USERNAME}
+      KOMODO_DATABASE_PASSWORD: ${KOMODO_DB_PASSWORD}
+    volumes:
+      ## Store dated backups of the database - https://komo.do/docs/setup/backup
+      - ${PATH_DATA}/komodo/backups:/backups
+      ## Store sync files on server
+      # - /path/to/syncs:/syncs
+      ## Optionally mount a custom core.config.toml
+      # - /path/to/core.config.toml:/config/config.toml
+    ## Allows for systemd Periphery connection at
+    ## "https://host.docker.internal:8120"
+    # extra_hosts:
+    #   - host.docker.internal:host-gateway
+    networks:
+      - proxy
+      - default
+    labels:
+      - "komodo.skip=" # Prevent Komodo from stopping with StopAllContainers
+      - "com.centurylinklabs.watchtower.enable=true"
+      - "traefik.docker.network=proxy"
+      - "traefik.enable=true"
+      - "traefik.http.routers.komodo.entrypoints=websecure"
+      - "traefik.http.routers.komodo.rule=Host(`komodo.${DEFAULT_DOMAIN}`)"
+      - "traefik.http.routers.komodo.service=komodo"
+      - "traefik.http.services.komodo.loadbalancer.server.port=9120"
+    extra_hosts:
+      - "sso.${DEFAULT_DOMAIN}:host-gateway"
+
+  ## Deploy Periphery container using this block,
+  ## or deploy the Periphery binary with systemd using
+  ## https://github.com/moghtech/komodo/tree/main/scripts
+  periphery:
+    image: ghcr.io/moghtech/komodo-periphery:${COMPOSE_KOMODO_IMAGE_TAG:-latest}
+    labels:
+      komodo.skip: # Prevent Komodo from stopping with StopAllContainers
+    restart: unless-stopped
+    env_file: .env
+    volumes:
+      ## Mount external docker socket
+      - /var/run/docker.sock:/var/run/docker.sock
+      ## Allow Periphery to see processes outside of container
+      - /proc:/proc
+      ## Specify the Periphery agent root directory.
+      ## Must be the same inside and outside the container,
+      ## or docker will get confused. See https://github.com/moghtech/komodo/discussions/180.
+      ## Default: /etc/komodo.
+      - ${PATH_DATA}/komodo/periphery:/etc/komodo}
+      - /opt/stacks:/opt/stacks
+
+  komodo-import:
+    image: foxxmd/komodo-import:latest
+    restart: no
+    volumes:
+      ## Parent directory where all subfolders are compose projects
+      - /opt/stacks:/opt/stacks
+    env_file: .env
+    environment:
+      ## Same as mounted directory above
+      - HOST_DIR=/opt/stacks
+      - MOUNT_DIR=/opt/stacks
+      ## Determines what sources to generate Stacks from
+      - STACKS_FROM=dir
+      ## Name of Server for this machine, in Komodo
+      - SERVER_NAME=core01
+      - KOMODO_URL=http://komodo-core-1:9120
+      - API_KEY
+      - API_SECRET
+      - OUTPUT_API_SYNC=true
+
+networks:
+  proxy:
+    external: true

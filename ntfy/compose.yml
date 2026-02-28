@@ -1,4 +1,13 @@
----
+
+################################
+# 📦 NTFY COMPOSE #
+################################
+# Service URL:
+# 🔗 https://ntfy.sh/
+# ENV Examples:
+# 🔗 https://docs.ntfy.sh/config/
+################################
+
 services:
   ntfy:
     user: "${PUID}:${PGID}"
