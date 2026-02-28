@@ -2,9 +2,8 @@
 ################################
 # 📦 UNIFI-NETWORK-CONTROLLER COMPOSE #
 ################################
-# Service URL:
+# UniFi Network controller; manage access points, switches, and gateways.
 # 🔗 https://unifi.ui.com/
-# ENV Examples:
 # 🔗 https://docs.linuxserver.io/images/docker-unifi-network-application
 ################################
 

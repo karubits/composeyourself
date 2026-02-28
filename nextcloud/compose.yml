@@ -2,9 +2,8 @@
 ################################
 # 📦 NEXTCLOUD COMPOSE #
 ################################
-# Service URL:
+# File sync, calendar, contacts, Talk, OnlyOffice; web, db, cache, cron, notify_push, turn, talk.
 # 🔗 https://nextcloud.com/
-# ENV Examples:
 # 🔗 https://docs.nextcloud.com/server/stable/admin_manual/installation/docker/
 ################################
 

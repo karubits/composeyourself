@@ -2,9 +2,8 @@
 ################################
 # 📦 ZITADEL COMPOSE #
 ################################
-# Service URL:
+# Identity and access management; OIDC/OAuth2, users, and API access.
 # 🔗 https://zitadel.com/
-# ENV Examples:
 # 🔗 https://zitadel.com/docs/self-hosting/manage/configure
 ################################
 

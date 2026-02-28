@@ -2,9 +2,8 @@
 ################################
 # 📦 CHANGEDETECTOR COMPOSE #
 ################################
-# Service URL:
+# Website change detection; watch URLs and get notified when content changes.
 # 🔗 https://changedetection.io/
-# ENV Examples:
 # 🔗 https://github.com/dgtlmoon/changedetection.io
 ################################
 

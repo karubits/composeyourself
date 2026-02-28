@@ -1,100 +1,165 @@
 # Compose Yourself 🐳
 
-A comprehensive collection of Docker Compose files for self-hosting various services. This repository serves as a reference for setting up and managing your own self-hosted infrastructure.
+> *Compose yourself. We already wrote the rest.*
 
-<img src=img/dashboard.png>
+A collection of Docker Compose stacks for self-hosting. Each stack lives in its own folder with a `compose.yml` (or `compose.yaml`) and optional `.env` files. Use as reference or copy what you need.
 
-## 🏠 Home Infrastructure
+![Dashboard](img/dashboard.png)
 
-### Identity & Authentication
-- [Authentik](https://goauthentik.io/) - Open-source identity provider that handles authentication, authorization, and user management
-- [Zitadel](https://zitadel.com/) - Cloud-native identity and access management platform with multi-tenancy support
+---
 
-### Network & Infrastructure
-- [Traefik](https://traefik.io/traefik/) - Modern reverse proxy and load balancer for cloud-native applications
-- [Docker Proxy](https://github.com/Tecnativa/docker-socket-proxy) - Secure proxy for Docker socket
-- [Dockge](https://dockge.kuma.pet/) - Web-based Docker Compose manager with a beautiful UI
-- [Watchtower](https://containrrr.dev/watchtower/) - Automated container updates for Docker
-- [Uptime Kuma](https://github.com/louislam/uptime-kuma) - Real-time monitoring and status dashboard for your services
-- Unifi Network Controller - Self-hosted Ubiquiti Network Controller with independent MongoDB
+## 📋 Structure & conventions
 
-### DNS & Network Services
-- DNS Stack
-    - [PowerDNS](https://www.powerdns.com/) - Authoritative DNS server with advanced features
-    - [AdGuard](https://adguard.com/en/welcome.html) - Privacy-focused DNS server with ad-blocking capabilities
+| Convention | Description |
+|------------|-------------|
+| **One stack per folder** | e.g. `traefik/`, `nextcloud/`, `download-stack/` |
+| **Env** | Stacks expect `.env` in the stack directory (or project root) |
+| **`PATH_DATA`** | Persistent data: databases, media, configs |
+| **`PATH_CONFIG`** | App config when separate from data |
+| **`DEFAULT_DOMAIN`** | Base domain for Traefik `Host()` rules (e.g. `example.com`) |
+| **Traefik** | Many stacks use Traefik labels and an external `proxy` network. Run Traefik first if you use it |
+| **Compose headers** | Each compose file has a short description and service links at the top |
 
-## 📱 Communication & Collaboration
+---
 
-### Team Communication
-- [Mattermost](https://mattermost.com/) - Open-source Slack alternative for team collaboration
-- [Mumble](https://www.mumble.info/) - Low-latency, high-quality voice chat server
+## 🏠 Infrastructure
 
-### Documentation & Knowledge
-- [Bookstack](https://www.bookstackapp.com/) - Modern, open-source wiki and documentation platform
-- [Docmost](https://docmost.com/) - Collaborative documentation platform for teams
-- [Nextcloud](https://nextcloud.com/) - Secure file sharing and collaboration platform
+### 🔐 Identity & auth
 
-## 🎮 Media & Entertainment
+| Stack | Description |
+|-------|-------------|
+| [Authentik](authentik/) | SSO and identity provider (server, worker, PostgreSQL, GeoIP updater) |
+| [Zitadel](zitadel/) | Identity and access management (OIDC/OAuth2) |
 
-### Media Management
-- [Jellyfin](https://jellyfin.org/) - Free and open-source media server alternative to Plex
-- [Immich](https://immich.app/) - Self-hosted photo and video backup solution
-- Download Stack
-    - [Gluetun](https://github.com/qdm12/gluetun) - VPN container for secure downloads
-    - [Prowlarr](https://prowlarr.com/) - Index manager for various media types
-    - [Radarr](https://radarr.video/) - Movie collection manager
-    - [Lidarr](https://lidarr.audio/) - Music collection manager
-    - [Sonarr](https://sonarr.tv/) - TV show collection manager
-    - [Readarr](https://readarr.com/) - eBook collection manager
-    - [Bazarr](https://www.bazarr.media/) - Subtitle manager
-    - [Deluge](https://deluge-torrent.org/) - Torrent client
-    - [Jellyseerr](https://github.com/Fallenbagel/jellyseerr) - Media request management for Jellyfin
+### 🌐 Core Services, Reverse proxy & ops
 
-### Gaming
-- [Minecraft](https://www.minecraft.net/) - Popular sandbox game server
-- [Pterodactyl](https://pterodactyl.io/) - Game server management panel with a beautiful UI
+| Stack | Description |
+|-------|-------------|
+| [Traefik](traefik/) | Reverse proxy and TLS termination |
+| [Docker Proxy](dockerproxy/) | Restricted Docker socket proxy for tools (e.g. Watchtower) |
+| [Dockge](dockge/) | Web UI to run and manage Compose stacks |
+| [Watchtower](watchtower/) | Auto-update running containers from new images |
+| [Uptime Kuma](uptime-kuma/) | Uptime and status dashboard with alerts |
+| [UniFi Network Controller](unifi-network-controller/) | Manage Ubiquiti access points, switches, gateways |
+| [Komodo](komodo/) | Peripheral and device management (MongoDB + Komodo services) |
+| [DNS Stack](dns-stack/) | PowerDNS (authoritative) and optional AdGuard Home instances |
 
-## 🛠️ Productivity & Tools
 
-### AI & Machine Learning
-- [Ollama](https://ollama.ai/) - Local large language model server for running various AI models
-- [OpenWebUI](https://github.com/open-webui/open-webui) - User-friendly web interface for interacting with local AI models
+---
 
-### Development
-- [Code Server](https://github.com/coder/code-server) - VS Code in your browser with full IDE capabilities
+## 📱 Communication & collaboration
 
-### Note Taking & Organization
-- [Obsidian Livesync](https://github.com/vrtmrz/obsidian-livesync) - Real-time synchronization for Obsidian notes using CouchDB
-- [Monica](https://www.monicahq.com/) - Personal CRM for managing relationships and interactions
+| Stack | Description |
+|-------|-------------|
+| [Mattermost](mattermost/) | Team chat (Slack alternative) |
+| [Mumble](mumble/) | Low-latency voice chat |
+| [Bookstack](bookstack/) | Wiki and documentation (books, chapters, pages) |
+| [Docmost](docmost/) | Team docs and collaboration |
+| [Nextcloud](nextcloud/) | Files, calendar, contacts, Talk, OnlyOffice |
 
-### File Management
-- [Filebrowser](https://filebrowser.org/) - Web-based file manager with a clean interface
-- [Paperless-NGX](https://docs.paperless-ngx.com/) - Document management system for digitizing and organizing paperwork
+---
 
-### Finance & Business
-- [Actual Budget](https://actualbudget.com/) - Privacy-focused budgeting application
-- [Invoice Ninja](https://invoiceninja.com/) - Open-source invoicing and time-tracking platform
+## 🎮 Media & entertainment
 
-## 🛡️ Monitoring & Security
+### 🎬 Media servers & photos
 
-### System Monitoring
-- [Beszel](https://github.com/henrygd/beszel) - Lightweight server monitoring platform with Docker stats, historical data, and alerts
-    - Beszel Hub - Central monitoring dashboard
-    - Beszel Agent - System monitoring agent
-- [Scrutiny](https://github.com/AnalogJ/scrutiny) - Hard drive health monitoring and analytics
-- [ChangeDetector](https://github.com/dgtlmoon/changedetection.io) - Website change detection and monitoring
+| Stack | Description |
+|-------|-------------|
+| [Jellyfin](jellyfin/) | Media server (movies, TV, music) |
+| [Immich](immich/) | Photo and video backup with mobile sync and web gallery |
 
-### Utility Tools
-- [Homepage](https://gethomepage.dev/) - Modern dashboard for your self-hosted services
-- [Ntfy](https://ntfy.sh/) - Simple push notification service
-- Tools
-    - [IT Tools](https://it-tools.tech/) - Collection of useful IT tools
-    - [Stirling PDF](https://github.com/Stirling-Tools/Stirling-PDF) - Web-based PDF manipulation tool
-    - [Open SpeedTest](https://openspeedtest.com/) - Open-source speed test implementation
-    - [Speedtest Tracker](https://github.com/alexjustesen/speedtest-tracker) - Internet performance monitoring and tracking
+### 📥 Download stack
+
+Single compose: VPN + *arr stack. All download traffic goes through Gluetun.
+
+**[→ Download Stack](download-stack/)**
+
+| Service | Description |
+|---------|-------------|
+| [Gluetun](https://github.com/qmcgaw/gluetun) | VPN container; other services use its network for secure egress |
+| [Prowlarr](https://wiki.servarr.com/prowlarr) | Indexer manager; syncs trackers and indexers to all *arr apps |
+| [Radarr](https://radarr.video/) | Movie collection manager; automates grabbing and organizing |
+| [Lidarr](https://lidarr.audio/) | Music collection manager for Usenet and BitTorrent |
+| [Sonarr](https://sonarr.tv/) | TV series PVR; monitors RSS and grabs new episodes |
+| [Readarr](https://readarr.com/) | Book and audiobook collection manager |
+| [Bazarr](https://www.bazarr.media/) | Subtitle manager for Sonarr/Radarr; fetches and manages subs |
+| [qBittorrent](https://www.qbittorrent.org/) | BitTorrent client with Web UI; used by *arr apps for downloads |
+| [Jellyseerr](https://jellyseerr.dev/) | Request management for Jellyfin/Emby; users request movies and TV |
+| [Unpackerr](https://golift.io/unpackerr) | Unpacks archives after *arr imports; integrates with Sonarr/Radarr/Lidarr/Readarr |
+| [Pinchflat](https://pinchflat.org/) | YouTube downloader and channel archiver |
+
+### 🎲 Gaming
+
+| Stack | Description |
+|-------|-------------|
+| [Minecraft](minecraft/) | mc-router, lazymc, game server nodes |
+| [Pterodactyl](pterodactyl/) | Panel + Wings for game server hosting |
+
+---
+
+## 🛠️ Productivity & tools
+
+### 🤖 AI
+
+| Stack | Description |
+|-------|-------------|
+| [Open WebUI](open-webui/) | Web UI for local LLMs (Open WebUI + Ollama) |
+
+### 💻 Dev & notes
+
+| Stack | Description |
+|-------|-------------|
+| [Code Server](code-server/) | VS Code in the browser |
+| [Obsidian LiveSync](obsidian-livesync/) | CouchDB backend for syncing Obsidian vaults |
+| [Monica](monica/) | Personal CRM (contacts, relationships, reminders) |
+
+### 📁 Files & docs
+
+| Stack | Description |
+|-------|-------------|
+| [Filebrowser](filebrowser/) | Web file manager |
+| [Paperless-NGX](paperless-ngx/) | Document manager (scan, OCR, tag, search) |
+
+### 💰 Finance & business
+
+| Stack | Description |
+|-------|-------------|
+| [Actual Budget](actual-budget/) | Budgeting with optional sync |
+| [Invoice Ninja](invoice-ninja/) | Invoicing, quotes, expenses, client portal |
+
+---
+
+## 🛡️ Monitoring & utilities
+
+### 📊 Monitoring
+
+| Stack | Description |
+|-------|-------------|
+| [Scrutiny](scrutiny/) | Disk health (SMART) dashboard |
+| [ChangeDetector](changedetector/) | Website change detection and alerts |
+
+### 🏠 Dashboards & notifications
+
+| Stack | Description |
+|-------|-------------|
+| [Homepage](homepage/) | Single dashboard for all services (widgets, links, status) |
+| [Ntfy](ntfy/) | Push notifications (topics, scripts, apps) |
+
+### 🔧 Tools stack
+
+**[→ Tools](tools/)** · IT Tools, Stirling PDF, OpenSpeedTest, Speedtest Tracker
+
+| Service | Description |
+|---------|-------------|
+| [IT Tools](https://it-tools.tech/) | Collection of dev and IT utilities (encoders, formatters, generators) |
+| [Stirling PDF](https://www.stirlingpdf.com/) | PDF toolkit in the browser: merge, split, convert, OCR |
+| [OpenSpeedTest](https://openspeedtest.com/) | Self-hosted internet speed test |
+| [Speedtest Tracker](https://speedtesttracker.io/) | Log and track speedtest results over time |
+
+---
 
 ## ⚠️ Disclaimer
 
-Every environment is unique, and this collection of compose files is tailored to my specific needs. This repository is shared publicly as a reference and guide for others embarking on their self-hosting journey. Please adapt these configurations to your own requirements and security needs.
+These stacks are maintained for my own use and shared as reference. Your environment will differ. Adapt paths, domains, and secrets to your setup and security needs.
 
-All the best on your self-hosting adventure! 🚀 
+**Happy self-hosting.** 🚀

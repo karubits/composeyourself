@@ -2,9 +2,8 @@
 ################################
 # 📦 UPTIME-KUMA COMPOSE #
 ################################
-# Service URL:
+# Uptime and status monitoring; dashboards and alerts for services.
 # 🔗 https://uptime.kuma.pet/
-# ENV Examples:
 # 🔗 https://github.com/louislam/uptime-kuma/wiki/Environment-Variables
 ################################
 

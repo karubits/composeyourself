@@ -1,3 +1,9 @@
+################################
+# 📦 MINECRAFT COMPOSE #
+################################
+# Minecraft servers; mc-router, lazymc, and optional game server nodes.
+################################
+
 ---
 services:
   mc-router:

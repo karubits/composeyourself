@@ -2,9 +2,8 @@
 ################################
 # 📦 OPEN-WEBUI COMPOSE #
 ################################
-# Service URL:
+# Web UI for local LLMs; open-webui (front end) + ollama (inference).
 # 🔗 https://openwebui.com/
-# ENV Examples:
 # 🔗 https://github.com/open-webui/open-webui
 ################################
 

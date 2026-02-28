@@ -2,9 +2,8 @@
 ################################
 # 📦 PTERODACTYL-WINGS COMPOSE #
 ################################
-# Service URL:
+# Game server daemon; runs game instances and talks to the Pterodactyl panel.
 # 🔗 https://pterodactyl.io/
-# ENV Examples:
 # 🔗 https://pterodactyl.io/wings/1.0/configuration.html
 ################################
 

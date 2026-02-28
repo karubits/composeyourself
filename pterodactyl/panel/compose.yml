@@ -2,9 +2,8 @@
 ################################
 # 📦 PTERODACTYL-PANEL COMPOSE #
 ################################
-# Service URL:
+# Game server panel; manage users, servers, and Wings nodes.
 # 🔗 https://pterodactyl.io/
-# ENV Examples:
 # 🔗 https://pterodactyl.io/panel/1.0/configuration.html
 ################################
 

@@ -2,9 +2,8 @@
 ################################
 # 📦 DNS-STACK COMPOSE #
 ################################
-# Service URL:
-# 🔗 https://www.powerdns.com/ (PowerDNS)
-# ENV Examples:
+# Authoritative DNS (PowerDNS) and optional AdGuard Home instances.
+# 🔗 https://www.powerdns.com/
 # 🔗 https://doc.powerdns.com/authoritative/
 ################################
 

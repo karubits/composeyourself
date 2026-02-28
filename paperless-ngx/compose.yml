@@ -2,9 +2,8 @@
 ################################
 # 📦 PAPERLESS-NGX COMPOSE #
 ################################
-# Service URL:
+# Document manager; scan, OCR, tag, and search PDFs and images.
 # 🔗 https://paperless-ngx.readthedocs.io/
-# ENV Examples:
 # 🔗 https://docs.paperless-ngx.com/configuration/
 ################################
 

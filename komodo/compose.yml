@@ -2,9 +2,8 @@
 ################################
 # 🦎 KOMODO COMPOSE - MONGO 🦎 #
 ################################
-# Service URL:
+# Peripheral and device management; MongoDB + Komodo services.
 # 🔗 https://komo.do/
-# ENV Examples:
 # 🔗 https://github.com/moghtech/komodo/blob/main/compose/compose.env
 ################################
 

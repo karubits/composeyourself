@@ -2,9 +2,8 @@
 ################################
 # 📦 TRAEFIK COMPOSE #
 ################################
-# Service URL:
+# Reverse proxy and TLS termination; routes traffic to backend services.
 # 🔗 https://traefik.io/
-# ENV Examples:
 # 🔗 https://doc.traefik.io/traefik/reference/static-configuration/env/
 ################################
 

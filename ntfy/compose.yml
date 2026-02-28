@@ -2,9 +2,8 @@
 ################################
 # 📦 NTFY COMPOSE #
 ################################
-# Service URL:
+# Push notifications; subscribe to topics and send alerts from scripts or apps.
 # 🔗 https://ntfy.sh/
-# ENV Examples:
 # 🔗 https://docs.ntfy.sh/config/
 ################################
 

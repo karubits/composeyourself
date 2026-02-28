@@ -2,9 +2,8 @@
 ################################
 # 📦 DOCKGE COMPOSE #
 ################################
-# Service URL:
+# Stack manager UI for Docker Compose; run and manage compose stacks from the browser.
 # 🔗 https://dockge.kuma.pet/
-# ENV Examples:
 # 🔗 https://github.com/louislam/dockge
 ################################
 

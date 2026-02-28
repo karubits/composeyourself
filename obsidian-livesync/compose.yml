@@ -2,9 +2,7 @@
 ################################
 # 📦 OBSIDIAN-LIVESYNC COMPOSE #
 ################################
-# Service URL:
-# 🔗 https://github.com/vrtmrz/obsidian-livesync
-# ENV Examples:
+# CouchDB backend for Obsidian LiveSync; sync vaults across devices.
 # 🔗 https://github.com/vrtmrz/obsidian-livesync
 ################################
 

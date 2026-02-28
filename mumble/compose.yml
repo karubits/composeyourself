@@ -2,9 +2,8 @@
 ################################
 # 📦 MUMBLE COMPOSE #
 ################################
-# Service URL:
+# Low-latency voice chat server for gaming and teams.
 # 🔗 https://www.mumble.info/
-# ENV Examples:
 # 🔗 https://github.com/mumble-voip/mumble
 ################################
 

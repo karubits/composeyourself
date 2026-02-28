@@ -2,9 +2,8 @@
 ################################
 # 📦 SCRUTINY COMPOSE #
 ################################
-# Service URL:
+# Disk health monitoring; collects SMART data and surfaces it in a dashboard.
 # 🔗 https://github.com/AnalogJ/scrutiny
-# ENV Examples:
 # 🔗 https://github.com/AnalogJ/scrutiny/blob/master/docker-compose.yml
 ################################
 

@@ -2,9 +2,8 @@
 ################################
 # 📦 JELLYFIN COMPOSE #
 ################################
-# Service URL:
+# Media server; stream movies, TV, and music to clients.
 # 🔗 https://jellyfin.org/
-# ENV Examples:
 # 🔗 https://jellyfin.org/docs/general/administration/configuration/
 ################################
 

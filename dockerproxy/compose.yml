@@ -2,9 +2,8 @@
 ################################
 # 📦 DOCKERPROXY COMPOSE #
 ################################
-# Service URL:
+# Proxy for Docker socket; exposes a restricted API for tools (e.g. Watchtower).
 # 🔗 https://github.com/tecnativa/docker-socket-proxy
-# ENV Examples:
 # 🔗 https://github.com/tecnativa/docker-socket-proxy#environment-variables
 ################################
 

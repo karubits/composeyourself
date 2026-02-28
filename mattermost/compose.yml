@@ -2,9 +2,8 @@
 ################################
 # 📦 MATTERMOST COMPOSE #
 ################################
-# Service URL:
+# Team chat and collaboration; Slack-alternative with channels and integrations.
 # 🔗 https://mattermost.com/
-# ENV Examples:
 # 🔗 https://docs.mattermost.com/configure/configuring-mattermost-server.html
 ################################
 
