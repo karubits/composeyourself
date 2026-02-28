@@ -17,7 +17,7 @@ services:
     restart: always
     volumes:
       - ${NEXTCLOUD_DATA_DIR}:/data
-      - nextcloud_web:/var/www/html
+      - ${PATH_DATA}/nextcloud/web:/var/www/html
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
     environment:
@@ -80,7 +80,8 @@ services:
       - "traefik.http.middlewares.nextcloud-redirect.redirectRegex.permanent=true"
       - "traefik.http.middlewares.nextcloud-redirect.redirectRegex.regex=https://(.*)/.well-known/(card|cal)dav"
       - "traefik.http.middlewares.nextcloud-redirect.redirectRegex.replacement=https://$${1}/remote.php/dav/"
-      # Router
+      # Router (priority=1 so /push can be routed to notify_push with higher priority)
+      - "traefik.http.routers.nextcloud.priority=1"
       - "traefik.http.routers.nextcloud.middlewares=nextcloud-redirect,nextcloud-headers"
       - "traefik.http.routers.nextcloud.entrypoints=websecure"
       - "traefik.http.routers.nextcloud.rule=Host(`hub.${DEFAULT_DOMAIN}`)"
@@ -90,13 +91,40 @@ services:
       nextcloud-cache:
           condition: service_healthy
 
+  # High Performance Back-end (notify_push): Instant Sync for desktop clients (Sync 2.0 / HPB).
+  # Install the "Client Push" (notify_push) app in Nextcloud first, then start this service.
+  notify_push:
+    container_name: nextcloud-notify-push
+    image: nextcloud:stable-apache
+    restart: always
+    depends_on:
+      - nextcloud-web
+    environment:
+      - PORT=7867
+      - NEXTCLOUD_URL=http://nextcloud-web
+    entrypoint: ["/bin/sh", "-c", "exec /var/www/html/apps/notify_push/bin/$$(uname -m)/notify_push /var/www/html/config/config.php"]
+    volumes:
+      - ${PATH_DATA}/nextcloud/web:/var/www/html:ro
+    networks:
+      - default
+      - proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=proxy"
+      - "traefik.http.routers.nextcloud-notify-push.rule=Host(`hub.${DEFAULT_DOMAIN}`) && PathPrefix(`/push`)"
+      - "traefik.http.routers.nextcloud-notify-push.priority=2"
+      - "traefik.http.routers.nextcloud-notify-push.entrypoints=websecure"
+      - "traefik.http.middlewares.nextcloud-push-strip.stripprefix.prefixes=/push"
+      - "traefik.http.routers.nextcloud-notify-push.middlewares=nextcloud-push-strip"
+      - "traefik.http.services.nextcloud-notify-push.loadbalancer.server.port=7867"
+
   nextcloud-cron:
     container_name: nextcloud-cron
     image: nextcloud:apache
     restart: always
     volumes:
       - ${NEXTCLOUD_DATA_DIR}:/data
-      - nextcloud_web:/var/www/html
+      - ${PATH_DATA}/nextcloud/web:/var/www/html
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
     entrypoint: /cron.sh
@@ -107,10 +135,9 @@ services:
 
   nextcloud-cache:
     container_name: nextcloud-cache
-    image: redis
+    image: valkey/valkey:latest
     restart: always
-    command: >
-      --requirepass ${REDIS_HOST_PASSWORD}
+    command: valkey-server --requirepass ${REDIS_HOST_PASSWORD}
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
@@ -118,7 +145,7 @@ services:
       - REDIS_PORT=6379
       - REDIS_HOST_PASSWORD=${REDIS_HOST_PASSWORD}
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: ["CMD-SHELL", "valkey-cli -a \"$$REDIS_HOST_PASSWORD\" ping | grep -q PONG"]
       interval: 5s
       timeout: 3s
       retries: 30
@@ -141,7 +168,7 @@ services:
       - MYSQL_PASSWORD=${MYSQL_PASSWORD}
       - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
     volumes:
-      - nextcloud_db:/var/lib/mysql
+      - ${PATH_DATA}/nextcloud/db:/var/lib/mysql
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
     healthcheck:
@@ -154,11 +181,69 @@ services:
       # Watchtower
       - "com.centurylinklabs.watchtower.enable=true"
 
-volumes:
-  nextcloud_db:
-    name: nextcloud_db
-  nextcloud_web:
-    name: nextcloud_web
+  # TURN for Nextcloud Talk. With dynamic IP: leave SERVER_PUBLIC_IP unset and the
+  # container will detect the public IP at startup. Set SERVER_PUBLIC_IP in .env for a static IP.
+  nextcloud-turn:
+    container_name: nextcloud-turn
+    image: coturn/coturn:latest
+    restart: always
+    environment:
+      - SERVER_PUBLIC_IP=${SERVER_PUBLIC_IP:-}
+      - DEFAULT_DOMAIN=${DEFAULT_DOMAIN}
+      - TURN_SECRET=${TURN_SECRET}
+    command: ["/bin/sh", "-c", "set -e; EXTERNAL_IP=$${SERVER_PUBLIC_IP}; if [ -z \"$$EXTERNAL_IP\" ]; then EXTERNAL_IP=$$(wget -qO- https://ifconfig.me/ip 2>/dev/null || wget -qO- https://api.ipify.org 2>/dev/null || true); fi; if [ -z \"$$EXTERNAL_IP\" ]; then echo 'Could not detect public IP and SERVER_PUBLIC_IP is unset'; exit 1; fi; exec turnserver --log-file=stdout --external-ip=$$EXTERNAL_IP --listening-port=3478 --fingerprint --realm=hub.$$DEFAULT_DOMAIN --lt-cred-mech --use-auth-secret --static-auth-secret=$$TURN_SECRET --min-port=49152 --max-port=65535"]
+    ports:
+      - "3478:3478"
+      - "3478:3478/udp"
+      - "49152-65535:49152-65535/udp"
+    networks:
+      - default
+
+  nextcloud-talk:
+    container_name: nextcloud-talk
+    image: ghcr.io/strukturag/nextcloud-spreed-signaling:latest
+    restart: always
+    environment:
+      - NC_DOMAIN=hub.${DEFAULT_DOMAIN}
+
+      # Shared secrets you define in .env
+      - JWT_SECRET=${TALK_JWT_SECRET}
+      - SIGNALING_SECRET=${TALK_SIGNALING_SECRET}
+      - TURN_SECRET=${TURN_SECRET}
+
+      # Public TURN URL clients will use
+      - TURN_SERVERS=turn:turn.${DEFAULT_DOMAIN}:3478?transport=udp
+    networks:
+      - default
+      - proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=proxy"
+      - "traefik.http.routers.nextcloud-talk.rule=Host(`signal.${DEFAULT_DOMAIN}`)"
+      - "traefik.http.routers.nextcloud-talk.entrypoints=websecure"
+      - "traefik.http.services.nextcloud-talk.loadbalancer.server.port=8080"
+
+  onlyoffice:
+    container_name: onlyoffice
+    image: onlyoffice/documentserver:latest
+    restart: always
+    environment:
+      # Recommended for Nextcloud integration
+      - JWT_ENABLED=true
+      - JWT_SECRET=${ONLYOFFICE_JWT_SECRET}
+      - JWT_HEADER=Authorization
+
+      # Optional: helps if you use a reverse proxy (Traefik)
+      - USE_UNAUTHORIZED_STORAGE=false
+    networks:
+      - default
+      - proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=proxy"
+      - "traefik.http.routers.onlyoffice.rule=Host(`office.${DEFAULT_DOMAIN}`)"
+      - "traefik.http.routers.onlyoffice.entrypoints=websecure"
+      - "traefik.http.services.onlyoffice.loadbalancer.server.port=80"
 
 networks:
   default:
