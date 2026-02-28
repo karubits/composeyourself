@@ -84,25 +84,25 @@ services:
       - ${PATH_DATA}/komodo/periphery:/etc/komodo}
       - /opt/stacks:/opt/stacks
 
-  komodo-import:
-    image: foxxmd/komodo-import:latest
-    restart: no
-    volumes:
-      ## Parent directory where all subfolders are compose projects
-      - /opt/stacks:/opt/stacks
-    env_file: .env
-    environment:
-      ## Same as mounted directory above
-      - HOST_DIR=/opt/stacks
-      - MOUNT_DIR=/opt/stacks
-      ## Determines what sources to generate Stacks from
-      - STACKS_FROM=dir
-      ## Name of Server for this machine, in Komodo
-      - SERVER_NAME=core01
-      - KOMODO_URL=http://komodo-core-1:9120
-      - API_KEY
-      - API_SECRET
-      - OUTPUT_API_SYNC=true
+  # komodo-import:
+  #   image: foxxmd/komodo-import:latest
+  #   restart: no
+  #   volumes:
+  #     ## Parent directory where all subfolders are compose projects
+  #     - /opt/stacks:/opt/stacks
+  #   env_file: .env
+  #   environment:
+  #     ## Same as mounted directory above
+  #     - HOST_DIR=/opt/stacks
+  #     - MOUNT_DIR=/opt/stacks
+  #     ## Determines what sources to generate Stacks from
+  #     - STACKS_FROM=dir
+  #     ## Name of Server for this machine, in Komodo
+  #     - SERVER_NAME=core01
+  #     - KOMODO_URL=http://komodo-core-1:9120
+  #     - API_KEY
+  #     - API_SECRET
+  #     - OUTPUT_API_SYNC=true
 
 networks:
   proxy:
