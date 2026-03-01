@@ -22,7 +22,7 @@ services:
       - proxy
     labels:
       # WatchTower
-      - "com.centurylinklabs.watchtower.enable=true"
+#      - "com.centurylinklabs.watchtower.enable=true"
       # Traefik
       - "traefik.enable=true"
       - "traefik.http.routers.changedetection.entrypoints=websecure"

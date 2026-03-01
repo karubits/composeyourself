@@ -21,7 +21,7 @@ services:
     networks:
       - proxy
     labels:
-      - "com.centurylinklabs.watchtower.enable=true"
+#      - "com.centurylinklabs.watchtower.enable=true"
       - "traefik.enable=true"
       # The Traefik Network
       - "traefik.docker.network=proxy"

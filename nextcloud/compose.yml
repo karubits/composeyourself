@@ -150,7 +150,7 @@ services:
       retries: 30
     labels:
       # Watchtower
-      - "com.centurylinklabs.watchtower.enable=true"
+#      - "com.centurylinklabs.watchtower.enable=true"
 
   nextcloud-db:
     container_name: nextcloud-db
@@ -178,7 +178,7 @@ services:
       #start_period: 30s
     labels:
       # Watchtower
-      - "com.centurylinklabs.watchtower.enable=true"
+#      - "com.centurylinklabs.watchtower.enable=true"
 
   # TURN for Nextcloud Talk. With dynamic IP: leave SERVER_PUBLIC_IP unset and the
   # container will detect the public IP at startup. Set SERVER_PUBLIC_IP in .env for a static IP.

@@ -51,7 +51,7 @@ services:
       timeout: 5s
       retries: 5
     labels:
-      - "com.centurylinklabs.watchtower.enable=true"
+#      - "com.centurylinklabs.watchtower.enable=true"
 
   open-webui:
     image: ghcr.io/open-webui/open-webui:main
@@ -145,7 +145,7 @@ services:
     networks:
       - llm
     labels:
-      - "com.centurylinklabs.watchtower.enable=true"
+#      - "com.centurylinklabs.watchtower.enable=true"
 
 
 networks:

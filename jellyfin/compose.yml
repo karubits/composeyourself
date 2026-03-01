@@ -30,7 +30,7 @@ services:
       - "1900:1900/tcp"  # Client Discovery DNLA
       - "7359:7359/udp"  # Client Discovery
     labels:
-      - "com.centurylinklabs.watchtower.enable=true"
+#      - "com.centurylinklabs.watchtower.enable=true"
       - "traefik.docker.network=proxy"
       - "traefik.enable=true"
       - "traefik.http.routers.jellyfin.entrypoints=websecure"

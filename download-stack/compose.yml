@@ -50,7 +50,7 @@ services:
       - proxy
     labels:
       # Watchtower
-      - "com.centurylinklabs.watchtower.enable=true"
+#      - "com.centurylinklabs.watchtower.enable=true"
       # Homepage
       - "homepage.group=Downloads"
       - "homepage.name=Gluetun"
@@ -138,7 +138,7 @@ services:
       - ${PATH_CONFIG}/prowlarr:/config
     labels:
       # Watchtower
-      - "com.centurylinklabs.watchtower.enable=true"
+#      - "com.centurylinklabs.watchtower.enable=true"
       # Homepage
       - "homepage.group=Media Collectors"
       - "homepage.name=Prowlarr"
@@ -169,7 +169,7 @@ services:
       - ${PATH_DOWNLOAD}:/downloads
     labels:
       # Watchtower
-      - "com.centurylinklabs.watchtower.enable=true"
+#      - "com.centurylinklabs.watchtower.enable=true"
       # Homepage
       - "homepage.group=Media Collectors"
       - "homepage.name=Radarr"
@@ -200,7 +200,7 @@ services:
       - ${PATH_DOWNLOAD}:/downloads #optional
     labels:
       # Watchtower
-      - "com.centurylinklabs.watchtower.enable=true"
+#      - "com.centurylinklabs.watchtower.enable=true"
       # Homepage
       - "traefik.enable=true"
       - "homepage.group=Media Collectors"
@@ -231,7 +231,7 @@ services:
       - ${PATH_DOWNLOAD}:/downloads #optional
     labels:
       # Watchtower
-      - "com.centurylinklabs.watchtower.enable=true"
+#      - "com.centurylinklabs.watchtower.enable=true"
       # Homepage
       - "homepage.group=Media Collectors"
       - "homepage.name=Sonarr"
@@ -262,7 +262,7 @@ services:
       - ${PATH_MEDIA}/books:/books
     labels:
       # Watchtower
-      - "com.centurylinklabs.watchtower.enable=true"
+#      - "com.centurylinklabs.watchtower.enable=true"
       # Homepage
       - "homepage.group=Media Collectors"
       - "homepage.name=readarr"
@@ -295,7 +295,7 @@ services:
       - ${PATH_DOWNLOAD}:/downloads
     labels:
       # Watchtower
-      - "com.centurylinklabs.watchtower.enable=true"
+#      - "com.centurylinklabs.watchtower.enable=true"
       # Homepage
       - "homepage.group=Media Collectors"
       - "homepage.name=Bazarr"
@@ -326,7 +326,7 @@ services:
       - ${PATH_DOWNLOAD}:/downloads
     labels:
       # Watchtower
-      - "com.centurylinklabs.watchtower.enable=true"
+#      - "com.centurylinklabs.watchtower.enable=true"
       # Homepage
       - "homepage.group=Downloads"
       - "homepage.name=Qbittorrent"
@@ -355,7 +355,7 @@ services:
     restart: unless-stopped
     labels:
       # Watchtower
-      - "com.centurylinklabs.watchtower.enable=true"
+#      - "com.centurylinklabs.watchtower.enable=true"
       # Homepage
       - "homepage.group=Media"
       - "homepage.name=Jellyseerr"
@@ -464,7 +464,7 @@ services:
       - UN_WEBSERVER_UPSTREAMS=
     labels:
       # Watchtower
-      - "com.centurylinklabs.watchtower.enable=true"
+#      - "com.centurylinklabs.watchtower.enable=true"
 
   pinchflat:
     # 🔹🔹 PINCHFLAT  🔹🔹
@@ -482,7 +482,7 @@ services:
       - ${PATH_MEDIA}/youtube:/downloads
     labels:
       # Watchtower
-      - "com.centurylinklabs.watchtower.enable=true"
+#      - "com.centurylinklabs.watchtower.enable=true"
 
 networks:
   proxy:

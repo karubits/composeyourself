@@ -1,0 +1,24 @@
+# One domain per service. For multiple domains (same IP), add another service
+# with a different env_file (e.g. .env.domain2) or environment override.
+services:
+  porkbun-ddns:
+    image: "mietzen/porkbun-ddns:latest"
+    container_name: porkbun-ddns
+    env_file:
+      - .env
+    restart: unless-stopped
+  # Example second domain (copy .env to .env.domain2 and set DOMAIN/SUBDOMAINS):
+  # porkbun-ddns-domain2:
+  #   image: "mietzen/porkbun-ddns:latest"
+  #   container_name: porkbun-ddns-domain2
+  #   env_file:
+  #     - .env.domain2
+  #   restart: unless-stopped
+
+# # Uncomment below to let it detect ipv6 address:
+#     networks:
+#       - ipv6_enabled
+
+# networks:
+#   ipv6_enabled:
+#     enable_ipv6: true

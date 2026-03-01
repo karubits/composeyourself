@@ -52,7 +52,7 @@ services:
       - default
     labels:
       - "komodo.skip=" # Prevent Komodo from stopping with StopAllContainers
-      - "com.centurylinklabs.watchtower.enable=true"
+#      - "com.centurylinklabs.watchtower.enable=true"
       - "traefik.docker.network=proxy"
       - "traefik.enable=true"
       - "traefik.http.routers.komodo.entrypoints=websecure"

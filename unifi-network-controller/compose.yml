@@ -26,7 +26,7 @@ services:
       - 6789:6789 #optional
       - 5514:5514/udp #optional
     labels:
-      - "com.centurylinklabs.watchtower.enable=true"
+#      - "com.centurylinklabs.watchtower.enable=true"
       - "traefik.enable=true"
       - "traefik.http.routers.unifi.entrypoints=http"
       - "traefik.http.routers.unifi.rule=Host(`unifi.$DEFAULT_DOMAIN`)"

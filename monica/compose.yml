@@ -25,7 +25,7 @@ services:
     env_file:
       - .monica.env
     labels:
-      - "com.centurylinklabs.watchtower.enable=true"
+#      - "com.centurylinklabs.watchtower.enable=true"
       - "traefik.docker.network=proxy"
       - "traefik.enable=true"
       - "traefik.http.routers.monica.entrypoints=websecure"
@@ -46,7 +46,7 @@ services:
     env_file:
       - .monica.env
     labels:
-      - "com.centurylinklabs.watchtower.enable=true"
+#      - "com.centurylinklabs.watchtower.enable=true"
 
 volumes:
   monica_app:

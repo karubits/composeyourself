@@ -22,7 +22,7 @@ services:
         ipv4_address: 172.18.198.2
     labels:
       # Watchtower
-      - "com.centurylinklabs.watchtower.enable=true"
+#      - "com.centurylinklabs.watchtower.enable=true"
 
   pdns_auth_overlay:
     image: powerdns/pdns-auth-48:latest
@@ -38,7 +38,7 @@ services:
         ipv4_address: 172.18.198.3
     labels:
       # Watchtower
-      - "com.centurylinklabs.watchtower.enable=true"
+#      - "com.centurylinklabs.watchtower.enable=true"
 
   adguardhome_local:
     image: 'adguard/adguardhome:latest'
@@ -67,7 +67,7 @@ services:
         ipv4_address: 172.18.198.4
       proxy:
     labels:
-      - "com.centurylinklabs.watchtower.enable=true"
+#      - "com.centurylinklabs.watchtower.enable=true"
       - "traefik.enable=true"
       - "traefik.docker.network=proxy"
       - "traefik.http.routers.adguard1.entrypoints=websecure"
@@ -101,7 +101,7 @@ services:
         ipv4_address: 172.18.198.5
       proxy:
     labels:
-      - "com.centurylinklabs.watchtower.enable=true"
+#      - "com.centurylinklabs.watchtower.enable=true"
       - "traefik.enable=true"
       - "traefik.docker.network=proxy"
       - "traefik.http.routers.adguard2.entrypoints=websecure"

@@ -20,7 +20,7 @@ services:
       - PGID=${PGID}
       - TZ=${TZ}
     labels:
-      - "com.centurylinklabs.watchtower.enable=true"
+#      - "com.centurylinklabs.watchtower.enable=true"
       - "traefik.docker.network=proxy"
       - "traefik.enable=true"
       - "traefik.http.routers.homepage.entrypoints=websecure"

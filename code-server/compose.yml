@@ -30,7 +30,7 @@ services:
     networks:
       proxy:
     labels:
-      - "com.centurylinklabs.watchtower.enable=true"
+#      - "com.centurylinklabs.watchtower.enable=true"
       - "traefik.enable=true"
       - "traefik.http.routers.code-server.entrypoints=websecure"
       - "traefik.http.routers.code-server.rule=Host(`code.${DEFAULT_DOMAIN}`)"

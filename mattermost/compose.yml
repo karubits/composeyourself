@@ -67,7 +67,7 @@ services:
       - ${CALLS_PORT}:${CALLS_PORT}/udp
       - ${CALLS_PORT}:${CALLS_PORT}/tcp
     labels:
-      - "com.centurylinklabs.watchtower.enable=true"
+#      - "com.centurylinklabs.watchtower.enable=true"
       - "traefik.docker.network=proxy"
       - "traefik.enable=true"
       - "traefik.http.routers.mm.entrypoints=websecure"

@@ -36,7 +36,7 @@ services:
       - "traefik.http.routers.ntfy.service=ntfy"
       - "traefik.http.services.ntfy.loadbalancer.server.port=4002"
       # Watchtower
-      - "com.centurylinklabs.watchtower.enable=true"
+#      - "com.centurylinklabs.watchtower.enable=true"
     networks:
       - proxy
 

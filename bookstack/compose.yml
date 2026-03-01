@@ -29,7 +29,7 @@ services:
     depends_on:
       - bookstack_db
     labels:
-      - "com.centurylinklabs.watchtower.enable=true"
+#      - "com.centurylinklabs.watchtower.enable=true"
       - "traefik.docker.network=proxy"
       - "traefik.enable=true"
       - "traefik.http.routers.bookstack.entrypoints=websecure"

@@ -17,7 +17,7 @@ services:
     restart: unless-stopped
     container_name: it-tools
     labels:
-      - "com.centurylinklabs.watchtower.enable=true"
+#      - "com.centurylinklabs.watchtower.enable=true"
       - "traefik.enable=true"
       - "traefik.http.routers.ittools.entrypoints=websecure"
       - "traefik.http.routers.ittools.rule=Host(`it-tools.${DEFAULT_DOMAIN}`)"
@@ -46,7 +46,7 @@ services:
     environment:
       - DOCKER_ENABLE_SECURITY=false
     labels:
-      - "com.centurylinklabs.watchtower.enable=true"
+#      - "com.centurylinklabs.watchtower.enable=true"
       - "traefik.enable=true"
       - "traefik.http.routers.pdf.entrypoints=websecure"
       - "traefik.http.routers.pdf.rule=Host(`pdf.${DEFAULT_DOMAIN}`)"
@@ -70,7 +70,7 @@ services:
     container_name: openspeedtest
     image: openspeedtest/latest
     labels:
-      - "com.centurylinklabs.watchtower.enable=true"
+#      - "com.centurylinklabs.watchtower.enable=true"
       - "traefik.enable=true"
       - "traefik.http.routers.speedtest.entrypoints=websecure"
       - "traefik.http.routers.speedtest.rule=Host(`speedtest.${DEFAULT_DOMAIN}`)"
@@ -111,7 +111,7 @@ services:
     depends_on:
       - speedtest-tracker-db
     labels:
-      - "com.centurylinklabs.watchtower.enable=true"
+#      - "com.centurylinklabs.watchtower.enable=true"
       - "traefik.enable=true"
       - "traefik.http.routers.speedtest-tracker.entrypoints=websecure"
       - "traefik.http.routers.speedtest-tracker.rule=Host(`speedtest-tracker.${DEFAULT_DOMAIN}`)"
@@ -145,7 +145,7 @@ services:
     volumes:
       - ${PATH_DATA}/speedtest-tracker/db:/var/lib/mysql
     labels:
-      - "com.centurylinklabs.watchtower.enable=true"
+#      - "com.centurylinklabs.watchtower.enable=true"
 
 networks:
   proxy:

@@ -15,7 +15,7 @@ services:
       - ${PATH_DATA}/uptime-kuma:/app/data
     restart: always
     labels:
-      - "com.centurylinklabs.watchtower.enable=true"
+#      - "com.centurylinklabs.watchtower.enable=true"
       - "traefik.enable=true"
       - "traefik.http.routers.uptimekuma.entrypoints=websecure"
       - "traefik.http.routers.uptimekuma.rule=Host(`status.${DEFAULT_DOMAIN}`)"

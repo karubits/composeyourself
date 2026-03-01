@@ -53,7 +53,7 @@ services:
       - notifications
       - monitoring
     labels:
-      - "com.centurylinklabs.watchtower.enable=true"
+#      - "com.centurylinklabs.watchtower.enable=true"
       - "traefik.enable=true"
       - "traefik.http.routers.ittools.entrypoints=websecure"
       - "traefik.http.routers.ittools.rule=Host(`it-tools.${DEFAULT_DOMAIN}`)"

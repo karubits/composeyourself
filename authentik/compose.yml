@@ -57,7 +57,7 @@ services:
       - ${PATH_DATA}/authentik/templates:/templates
       - ${PATH_DATA}/authentik/geoip:/geoip
     labels:
-      - "com.centurylinklabs.watchtower.enable=true"
+#      - "com.centurylinklabs.watchtower.enable=true"
       - "traefik.docker.network=proxy"
       - "traefik.enable=true"
       - "traefik.http.routers.sso.entrypoints=websecure"
