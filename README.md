@@ -19,6 +19,7 @@ A collection of Docker Compose stacks for self-hosting. Each stack lives in its 
 | **`DEFAULT_DOMAIN`** | Base domain for Traefik `Host()` rules (e.g. `example.com`) |
 | **Traefik** | Many stacks use Traefik labels and an external `proxy` network. Run Traefik first if you use it |
 | **Compose headers** | Each compose file has a short description and service links at the top |
+| **Format** | [FORMAT-GUIDELINES.md](FORMAT-GUIDELINES.md) defines compose header, env.sample, and README update rules |
 
 ---
 

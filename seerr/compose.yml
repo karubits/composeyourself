@@ -1,0 +1,66 @@
+
+################################
+# 📦 SEERR COMPOSE #
+################################
+# Media request manager for Jellyfin, Plex, Emby.
+# Integrates with Sonarr, Radarr, etc.
+# 🔗 https://docs.seerr.dev/
+# 🔗 https://github.com/seerr-team/seerr
+################################
+# Database: SQLite by default (no extra container).
+# Optional PostgreSQL: set DB_TYPE=postgres and add a postgres service;
+# see docs: https://docs.seerr.dev/extending-seerr/database-config
+################################
+
+services:
+  seerr:
+    image: ghcr.io/seerr-team/seerr:latest
+    init: true
+    container_name: seerr
+    environment:
+      - TZ=${TZ}
+      - LOG_LEVEL=${LOG_LEVEL:-info}
+      - PORT=5055
+      # Optional: PostgreSQL (omit to use SQLite)
+      # - DB_TYPE=postgres
+      # - DB_HOST=db
+      # - DB_PORT=5432
+      # - DB_USER=${SEERR_DB_USER}
+      # - DB_PASS=${SEERR_DB_PASS}
+      # - DB_NAME=${SEERR_DB_NAME:-seerr}
+    ports:
+      - "5055:5055"
+    volumes:
+      - ${PATH_CONFIG}/seerr:/app/config
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://localhost:5055/api/v1/status || exit 1
+      start_period: 20s
+      timeout: 3s
+      interval: 15s
+      retries: 3
+    restart: unless-stopped
+    labels:
+      - "traefik.docker.network=proxy"
+      - "traefik.enable=true"
+      - "traefik.http.routers.seerr.entrypoints=websecure"
+      - "traefik.http.routers.seerr.rule=Host(`seerr.${DEFAULT_DOMAIN}`)"
+      - "traefik.http.routers.seerr.service=seerr"
+      - "traefik.http.services.seerr.loadbalancer.server.port=5055"
+      - "homepage.group=Media"
+      - "homepage.name=Seerr"
+      - "homepage.icon=seerr.png"
+      - "homepage.href=https://seerr.${DEFAULT_DOMAIN}"
+      - "homepage.description=Media requests"
+      - "homepage.weight=2"
+    networks:
+      - default
+      - proxy
+
+
+networks:
+  default:
+    name: media_network
+    external: true
+  proxy:
+    name: proxy
+    external: true

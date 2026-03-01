@@ -3,12 +3,16 @@
 # 📦 NEXTCLOUD COMPOSE #
 ################################
 # File sync, calendar, contacts, Talk, OnlyOffice; web, db, cache, cron, notify_push, turn, talk.
-# 🔗 https://nextcloud.com/
 # 🔗 https://docs.nextcloud.com/server/stable/admin_manual/installation/docker/
 ################################
 
 name: nextcloud
 services:
+  # 🔹🔹 NEXTCLOUD WEB  🔹🔹
+  # Main Nextcloud app (Apache); files, calendar, contacts, apps.
+  # 🔗 https://nextcloud.com/
+  # 🔗 https://github.com/nextcloud/server
+  # 🔗 https://docs.nextcloud.com/server/stable/admin_manual/
   nextcloud-web:
     hostname: nextcloud-web
     container_name: nextcloud-web
@@ -90,8 +94,10 @@ services:
       nextcloud-cache:
           condition: service_healthy
 
-  # High Performance Back-end (notify_push): Instant Sync for desktop clients (Sync 2.0 / HPB).
-  # Install the "Client Push" (notify_push) app in Nextcloud first, then start this service.
+  # 🔹🔹 NOTIFY_PUSH (HPB)  🔹🔹
+  # Instant sync for desktop clients (Sync 2.0 / High Performance Back-end). Install "Notify push" app in Nextcloud first.
+  # 🔗 https://github.com/nextcloud/notify_push
+  # 🔗 https://docs.nextcloud.com/server/stable/admin_manual/installation/source_installation.html#high-performance-back-end
   notify_push:
     container_name: nextcloud-notify-push
     image: nextcloud:stable-apache
@@ -117,6 +123,9 @@ services:
       - "traefik.http.routers.nextcloud-notify-push.middlewares=nextcloud-push-strip"
       - "traefik.http.services.nextcloud-notify-push.loadbalancer.server.port=7867"
 
+  # 🔹🔹 NEXTCLOUD CRON  🔹🔹
+  # Background jobs (cron); runs Nextcloud scheduled tasks.
+  # 🔗 https://docs.nextcloud.com/server/stable/admin_manual/installation/source_installation.html#running-background-jobs
   nextcloud-cron:
     container_name: nextcloud-cron
     image: nextcloud:apache
@@ -132,6 +141,11 @@ services:
       - nextcloud-db
       - nextcloud-cache
 
+  # 🔹🔹 VALKEY (CACHE)  🔹🔹
+  # Redis-compatible cache for Nextcloud (transactional file locking, session, etc.).
+  # 🔗 https://valkey.io/
+  # 🔗 https://github.com/valkey-io/valkey
+  # 🔗 https://docs.nextcloud.com/server/stable/admin_manual/installation/server_tuning.html#redis-configuration
   nextcloud-cache:
     container_name: nextcloud-cache
     image: valkey/valkey:latest
@@ -152,14 +166,21 @@ services:
       # Watchtower
 #      - "com.centurylinklabs.watchtower.enable=true"
 
+  # 🔹🔹 MARIADB (DATABASE)  🔹🔹
+  # Primary database for Nextcloud (users, metadata, app data).
+  # 🔗 https://mariadb.org/
+  # 🔗 https://github.com/MariaDB/server
+  # 🔗 https://docs.nextcloud.com/server/stable/admin_manual/configuration_database/linux_database_configuration.html
   nextcloud-db:
     container_name: nextcloud-db
-    image: mariadb:10.6
+    image: mariadb:10.11
+    # Nextcloud-recommended: READ-COMMITTED, ROW binlog, utf8mb4; max_allowed_packet helps avoid "MySQL server has gone away".
     command: >
       --transaction-isolation=READ-COMMITTED
       --binlog-format=ROW
       --character-set-server=utf8mb4
       --collation-server=utf8mb4_unicode_ci
+      --max-allowed-packet=64M
     restart: always
     environment:
       - MYSQL_DATABASE=nextcloud
@@ -180,8 +201,10 @@ services:
       # Watchtower
 #      - "com.centurylinklabs.watchtower.enable=true"
 
-  # TURN for Nextcloud Talk. With dynamic IP: leave SERVER_PUBLIC_IP unset and the
-  # container will detect the public IP at startup. Set SERVER_PUBLIC_IP in .env for a static IP.
+  # 🔹🔹 COTURN (TURN)  🔹🔹
+  # TURN server for Nextcloud Talk (WebRTC NAT traversal). Set SERVER_PUBLIC_IP in .env for static IP; leave unset for auto-detect.
+  # 🔗 https://github.com/coturn/coturn
+  # 🔗 https://docs.nextcloud.com/server/stable/admin_manual/configuration_server/talk_configuration.html
   nextcloud-turn:
     container_name: nextcloud-turn
     image: coturn/coturn:latest
@@ -198,6 +221,11 @@ services:
     networks:
       - default
 
+  # 🔹🔹 NEXTCLOUD TALK (SPREED SIGNALING)  🔹🔹
+  # Signaling server for Nextcloud Talk (calls, screenshare). Exposed as signal.${DEFAULT_DOMAIN}.
+  # 🔗 https://nextcloud.com/talk/
+  # 🔗 https://github.com/strukturag/nextcloud-spreed-signaling
+  # 🔗 https://docs.nextcloud.com/server/stable/admin_manual/configuration_server/talk_configuration.html
   nextcloud-talk:
     container_name: nextcloud-talk
     image: ghcr.io/strukturag/nextcloud-spreed-signaling:latest
@@ -222,6 +250,11 @@ services:
       - "traefik.http.routers.nextcloud-talk.entrypoints=websecure"
       - "traefik.http.services.nextcloud-talk.loadbalancer.server.port=8080"
 
+  # 🔹🔹 ONLYOFFICE  🔹🔹
+  # Document server for Nextcloud (Office docs, spreadsheets, presentations). Exposed as office.${DEFAULT_DOMAIN}.
+  # 🔗 https://www.onlyoffice.com/
+  # 🔗 https://github.com/ONLYOFFICE/DocumentServer
+  # 🔗 https://helpcenter.onlyoffice.com/installation/docker-installation.aspx
   onlyoffice:
     container_name: onlyoffice
     image: onlyoffice/documentserver:latest
