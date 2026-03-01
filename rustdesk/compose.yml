@@ -1,0 +1,38 @@
+
+################################
+# 📦 RUSTDESK COMPOSE #
+################################
+# Self-hosted RustDesk server (ID and relay); remote desktop without third-party servers.
+# 🔗 https://rustdesk.com/
+# 🔗 https://github.com/rustdesk/rustdesk-server
+################################
+
+services:
+  rustdesk-id:
+    container_name: rustdesk-id
+    image: rustdesk/rustdesk-server:latest
+    command: hbbs
+    volumes:
+      - ${PATH_DATA}/rustdesk:/root
+    depends_on:
+      - rustdesk-relay
+    restart: unless-stopped
+    environment:
+      - ALWAYS_USE_RELAY=Y
+    ports:
+      - "21115:21115/tcp"
+      - "21116:21116/tcp"
+      - "21116:21116/udp"
+      - "21118:21118/tcp"
+
+  rustdesk-relay:
+    container_name: rustdesk-relay
+    image: rustdesk/rustdesk-server:latest
+    command: hbbr
+    volumes:
+      - ${PATH_DATA}/rustdesk:/root
+    restart: unless-stopped
+    ports:
+      - "21117:21117/tcp"
+      - "21119:21119/tcp"
+

@@ -1,3 +1,12 @@
+
+################################
+# 📦 TECHNITIUM DNS COMPOSE #
+################################
+# Self-hosted DNS server with web console; DoH, DoT, DHCP optional.
+# 🔗 https://technitium.com/dns/
+# 🔗 https://github.com/TechnitiumSoftware/DnsServer
+################################
+
 services:
   dns-server:
     container_name: dns-server

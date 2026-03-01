@@ -1,0 +1,27 @@
+
+################################
+# 🦎 KOMODO-PERIPHERY COMPOSE #
+################################
+# Periphery agent for Komodo; runs on hosts to manage containers and resources.
+# 🔗 https://komo.do/
+# 🔗 https://github.com/moghtech/komodo/blob/main/config/periphery.config.toml
+################################
+
+services:
+  periphery:
+    image: ghcr.io/moghtech/komodo-periphery:${COMPOSE_KOMODO_IMAGE_TAG:-latest}
+    labels:
+      komodo.skip: # Prevent Komodo from stopping with StopAllContainers
+    restart: unless-stopped
+    env_file: .env
+    volumes:
+      ## Mount external docker socket
+      - /var/run/docker.sock:/var/run/docker.sock
+      ## Allow Periphery to see processes outside of container
+      - /proc:/proc
+      ## Specify the Periphery agent root directory.
+      ## Must be the same inside and outside the container,
+      ## or docker will get confused. See https://github.com/moghtech/komodo/discussions/180.
+      ## Default: /etc/komodo.
+      - ${PATH_DATA}/komodo/periphery:/etc/komodo
+      - /opt/stacks:/opt/stacks

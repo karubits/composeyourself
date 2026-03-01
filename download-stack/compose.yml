@@ -335,7 +335,7 @@ services:
       - "homepage.weight=1"
       - "homepage.widget.type=qbittorrent"
       - "homepage.widget.url=https://qbt.${DEFAULT_DOMAIN}"
-      - "homepage.widget.password=${USER_QBT}"
+      - "homepage.widget.username=${USER_QBT}"
       - "homepage.widget.password=${PASS_QBT}"
 
   jellyseerr:

@@ -1,5 +1,12 @@
-# One domain per service. For multiple domains (same IP), add another service
-# with a different env_file (e.g. .env.domain2) or environment override.
+
+################################
+# 📦 PORKBUN-DDNS COMPOSE #
+################################
+# Updates Porkbun DNS records with your current public IP; one domain per container.
+# 🔗 https://porkbun.com/
+# 🔗 https://github.com/mietzen/porkbun-ddns
+################################
+
 services:
   porkbun-ddns:
     image: "mietzen/porkbun-ddns:latest"
